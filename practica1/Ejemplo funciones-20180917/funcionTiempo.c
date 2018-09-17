@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<time.h>
 
-main(){
+int main(){
 
 	time_t tiempo;
 	struct tm * stTm;

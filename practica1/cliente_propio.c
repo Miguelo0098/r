@@ -7,10 +7,11 @@
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <string.h>
 
 /* --------------------------------------------------------------------------------------
  
- Envía un número aleatorio al servidor, quien el devuelve el número incremetnado
+ EnvÃ­a un nÃºmero aleatorio al servidor, quien el devuelve el nÃºmero incremetnado
 
 ---------------------------------------------------------------------------------------- */
  
@@ -21,7 +22,7 @@ int main ( )
 			Descriptor del socket y buffer para datos 
 		-----------------------------------------------------*/
 		int Socket_Cliente;
-		int Datos;
+		char Datos[80];
    
    	/* -----------------------------------------------------
    		Informaci\ufffdn del Servidor
@@ -46,7 +47,7 @@ int main ( )
    		----------------------------------------------------------------------*/
 		Servidor.sin_family = AF_INET;
 		Servidor.sin_port = htons(2000);
-		Servidor.sin_addr.s_addr =  inet_addr("172.0.0.1");
+		Servidor.sin_addr.s_addr =  inet_addr("127.0.0.1");
   	 	Longitud_Servidor = sizeof(Servidor);
 	
 
@@ -54,11 +55,23 @@ int main ( )
 			Se genera un n\ufffdmero aleatorio, que es el que se le manda al
 			servidor.
 		------------------------------------------------------------------------ */
-   	srand (time(NULL)); /* Semilla para n\ufffdmeros aleatorios */
-   	Datos = rand()%20;  /* Aleatorio entre 0 y 19 */
-   	printf ("Envio %d\n", Datos);
 
-   	
+  	printf("Introduzca lo que desea recibir:\n");
+	fgets(Datos, sizeof(Datos), stdin);	
+   	printf ("Envio %s\n", Datos);
+
+   	/////////////////TEST ZONE///////////////////////
+	int counter = 0;
+
+	while(counter < 3){
+		
+	}
+
+
+
+
+   	///////////////////////////////////////////
+
 		/*-----------------------------------------------------------------------
 			Se env\ufffda mensaje al Servidor
 		-----------------------------------------------------------------------*/
@@ -79,7 +92,7 @@ int main ( )
 			(struct sockaddr *) &Servidor, &Longitud_Servidor);
 			
    		if (recibido > 0)
-      		printf ("Leido %d\n", Datos);
+      		printf ("Leido %s\n", Datos);
    		else
       		printf ("Error al leer del servidor\n");
 		
