@@ -5,7 +5,7 @@
 
 class Tablero {
 private:
-  Casilla tablero[10][10];
+  Casilla _tablero[10][10];
 
 
 public:
