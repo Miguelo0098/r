@@ -16,7 +16,8 @@ public:
   }
 
   int getBombsTab();
-  int getMarksTab();
+  int getMarksTabA();
+  int getMarksTabB();
 
   void resetTablero();
   void printTablero();
