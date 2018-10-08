@@ -1,4 +1,6 @@
 #include "tablero.hpp"
+#include <ctime>
+#include <cstdlib>
 
 int Tablero::getBombsTab(){
   int count = 0;
@@ -34,4 +36,22 @@ int Tablero::getMarksTabB(){
     }
   }
   return count;
+}
+
+void Tablero::resetTablero(){
+  srand(time(NULL));
+  int rnumber = -1;
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
+      getCasilla(i, j).setBomb(false);
+      getCasilla(i, j).setNBombs(0);
+      getCasilla(i, j).setMark(0);
+      getCasilla(i, j).setCover(false);
+    }
+  }
+
+  while (getBombsTab() < 20) {
+    rnumber = rand() % 100;
+    getCasilla(rnumber/10, rnumber%10).setBomb(true);
+  }
 }
