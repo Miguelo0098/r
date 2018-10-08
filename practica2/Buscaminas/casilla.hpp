@@ -11,45 +11,45 @@ private:
 public:
   /* Constructor */
   inline Casilla (int n_bombs = 0, bool bomb = false, int mark = 0, bool uncovered = false){
-    setNBombs(n_bombs);
-    setBomb(bomb);
-    setMark(mark);
-    setCover(uncovered);
+    this->setNBombs(n_bombs);
+    this->setBomb(bomb);
+    this->setMark(mark);
+    this->setCover(uncovered);
   }
 
   /* Observadores */
   inline int getNBombs(){
-    return _n_bombs;
+    return this->_n_bombs;
   }
 
   inline bool hasBomb(){
-    return _bomb;
+    return this->_bomb;
   }
 
   inline int getMark(){
-    return _mark;
+    return this->_mark;
   }
 
   inline bool isCovered(){
-    return _uncovered;
+    return this->_uncovered;
   }
 
   /* Modificadores */
 
   inline void setNBombs(int n_bombs){
-    _n_bombs = n_bombs;
+    this->_n_bombs = n_bombs;
   }
 
   inline void setBomb(bool bomb){
-    _bomb = bomb;
+    this->_bomb = bomb;
   }
 
   inline void setMark(int mark){
-    _mark = mark;
+    this->_mark = mark;
   }
 
   inline void setCover(bool uncovered){
-    _uncovered = uncovered;
+    this->_uncovered = uncovered;
   }
 
   /* Para imprimir casilla */
