@@ -41,6 +41,7 @@ int Tablero::getMarksTabB(){
 void Tablero::resetTablero(){
   srand(time(NULL));
   int rnumber = -1;
+  /* Vacía el tablero */
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 10; j++) {
       getCasilla(i, j).setBomb(false);
@@ -49,7 +50,7 @@ void Tablero::resetTablero(){
       getCasilla(i, j).setCover(false);
     }
   }
-
+  /* Rellena el tablero con 20 bombas */
   while (getBombsTab() < 20) {
     rnumber = rand() % 100;
     getCasilla(rnumber/10, rnumber%10).setBomb(true);
