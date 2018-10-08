@@ -3,43 +3,53 @@
 
 class Casilla {
 private:
-  int n_bombs;
-  bool bomb;
-  bool mark;
+  int _n_bombs;
+  bool _bomb;
+  bool _mark;
+  bool _uncovered;
 
 public:
   /* Constructor */
-  inline Casilla (int nBombas = 0, bool bomba = false, bool marca = false){
+  inline Casilla (int nBombas = 0, bool bomba = false, bool marca = false, bool descubierto = false){
     setNBombs(nBombas);
     setBomb(bomba);
     setMark(marca);
+    setCover(descubierto);
   }
 
   /* Observadores */
   inline int getNBombs(){
-    return n_bombs;
+    return _n_bombs;
   }
 
   inline bool hasBomb(){
-    return bomb;
+    return _bomb;
   }
 
   inline bool hasMark(){
-    return mark;
+    return _mark;
+  }
+
+  inline bool isCovered(){
+    return _uncovered;
   }
 
   /* Modificadores */
 
   inline void setNBombs(int nBombas){
-    n_bombs = nBombas;
+    _n_bombs = nBombas;
   }
 
   inline void setBomb(bool bomba){
-    bomb = bomba;
+    _bomb = bomba;
   }
 
   inline void setMark(bool marca){
-    mark = marca;
+    _mark = marca;
+  }
+
+  inline void setCover(bool descubierto){
+    _uncovered = descubierto;
   }
 
   /* Para imprimir casilla */

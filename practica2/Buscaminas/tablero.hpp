@@ -5,14 +5,14 @@
 
 class Tablero {
 private:
-  Casilla tablero[100];
+  Casilla tablero[10][10];
 
 
 public:
   Tablero ();
 
-  inline Casilla & getCasilla(int n){
-    return tablero[n];
+  inline Casilla & getCasilla(int n, int m){
+    return tablero[n][m];
   }
 
   int getBombsTab();
