@@ -5,16 +5,16 @@ class Casilla {
 private:
   int _n_bombs;
   bool _bomb;
-  bool _mark;
+  int _mark;
   bool _uncovered;
 
 public:
   /* Constructor */
-  inline Casilla (int nBombas = 0, bool bomba = false, bool marca = false, bool descubierto = false){
-    setNBombs(nBombas);
-    setBomb(bomba);
-    setMark(marca);
-    setCover(descubierto);
+  inline Casilla (int n_bombs = 0, bool bomb = false, int mark = 0, bool uncovered = false){
+    setNBombs(n_bombs);
+    setBomb(bomb);
+    setMark(mark);
+    setCover(uncovered);
   }
 
   /* Observadores */
@@ -36,20 +36,20 @@ public:
 
   /* Modificadores */
 
-  inline void setNBombs(int nBombas){
-    _n_bombs = nBombas;
+  inline void setNBombs(int n_bombs){
+    _n_bombs = n_bombs;
   }
 
-  inline void setBomb(bool bomba){
-    _bomb = bomba;
+  inline void setBomb(bool bomb){
+    _bomb = bomb;
   }
 
-  inline void setMark(bool marca){
-    _mark = marca;
+  inline void setMark(bool mark){
+    _mark = mark;
   }
 
-  inline void setCover(bool descubierto){
-    _uncovered = descubierto;
+  inline void setCover(bool uncovered){
+    _uncovered = uncovered;
   }
 
   /* Para imprimir casilla */
