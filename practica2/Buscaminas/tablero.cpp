@@ -55,4 +55,17 @@ void Tablero::resetTablero(){
     rnumber = rand() % 100;
     getCasilla(rnumber/10, rnumber%10).setBomb(true);
   }
+
+  /* Contamos el número de bombas alrededor de cada casilla */
+  int n_bombs = 0;
+  for (int i = 1; i < 9; i++) {
+    for (int j = 1; j < 9; j++) {
+      n_bombs = 0;
+      for (int ip = -1; ip < 2; ip++) {
+        for (int jp = -1; jp < 2; jp++) {
+          /* code */
+        }
+      }
+    }
+  }
 }
