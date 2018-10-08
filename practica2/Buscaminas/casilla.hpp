@@ -1,6 +1,5 @@
 #ifndef CASILLA_HPP
 #define CASILLA_HPP
-#endif
 
 class Casilla {
 private:
@@ -43,5 +42,8 @@ public:
     mark = marca;
   }
 
-
+  /* Para imprimir casilla */
+  void printCasilla();
 };
+
+#endif
