@@ -15,7 +15,12 @@ public:
     return tablero[n];
   }
 
-  
+  int getBombsTab();
+  int getMarksTab();
+
+  void resetTablero();
+  void printTablero();
+
 };
 
 #endif
