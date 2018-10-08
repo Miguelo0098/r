@@ -26,7 +26,7 @@ public:
     return _bomb;
   }
 
-  inline bool hasMark(){
+  inline int getMark(){
     return _mark;
   }
 
@@ -44,7 +44,7 @@ public:
     _bomb = bomb;
   }
 
-  inline void setMark(bool mark){
+  inline void setMark(int mark){
     _mark = mark;
   }
 
