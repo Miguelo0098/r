@@ -8,11 +8,9 @@ void Casilla::printCasilla()const{
     else{
       if(this->getMark() == 1){ //Bandera de jugador A
         printf("A");
-      }else{
-        if(this->getMark() == 2){ //Bandera de jugador B
+      }else if(this->getMark() == 2){ //Bandera de jugador B
           printf("B");
-        }else //Bandera de ambos
-          printf("A|B");
+        }
       }
     }
   }else{ // Esta descubierta
