@@ -76,7 +76,7 @@ void Tablero::resetTablero(){
 
   /* Para los bordes de arriba e izquierda */
   int n_bombs2 = 0
-  for (int i = 1; i < 10; i++) {
+  for (int i = 1; i < 9; i++) {
     n_bombs = 0;
     n_bombs2 = 0;
     for (int ip = -1; ip < 2; ip++) {
@@ -94,11 +94,11 @@ void Tablero::resetTablero(){
   }
 
   /* Para los bordes de abajo y derecha */
-  for (int i = 1; i < 10; i++) {
+  for (int i = 1; i < 9; i++) {
     n_bombs = 0;
     n_bombs2 = 0;
     for (int ip = -1; ip < 2; ip++) {
-      for (int jp = 9; jp < 11; jp++) {
+      for (int jp = 8; jp < 10; jp++) {
         if (getCasilla(i+ip, jp).hasBomb() == true) {
           n_bombs++;
         }
@@ -107,8 +107,8 @@ void Tablero::resetTablero(){
         }
       }
     }
-    getCasilla(i, 10).setNBombs(n_bombs);
-    getCasilla(10, i).setNBombs(n_bombs2);
+    getCasilla(i, 9).setNBombs(n_bombs);
+    getCasilla(9, i).setNBombs(n_bombs2);
   }
 
   /* Rellenamos las esquinas */
@@ -122,20 +122,32 @@ void Tablero::resetTablero(){
       if (getCasilla(i, j).hasBomb() == true) {
         n_bombs++;
       }
-      if (getCasilla(10-i, j).hasBomb() == true) {
+      if (getCasilla(9-i, j).hasBomb() == true) {
         n_bombs2++;
       }
-      if (getCasilla(i, 10-j).hasBomb() == true) {
+      if (getCasilla(i, 9-j).hasBomb() == true) {
         n_bombs3++;
       }
-      if (getCasilla(10-i, 10-j).hasBomb() == true) {
+      if (getCasilla(9-i, 9-j).hasBomb() == true) {
         n_bombs4++;
       }
     }
   }
   getCasilla(0, 0).setNBombs(n_bombs);
-  getCasilla(10, 0).setNBombs(n_bombs2);
-  getCasilla(0, 10).setNBombs(n_bombs3);
-  getCasilla(10, 10).setNBombs(n_bombs4);
+  getCasilla(9, 0).setNBombs(n_bombs2);
+  getCasilla(0, 9).setNBombs(n_bombs3);
+  getCasilla(9, 9).setNBombs(n_bombs4);
 
+}
+
+void Tablero::printTablero(){
+  printf("\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n");
+  for (int i = 0; i < 10; i++) {
+    printf("[%d] |\t", i);
+    for (int j = 0; j < 10; j++) {
+      getCasilla(i, j).printCasilla();
+      printf("\t");
+    }
+    printf("\n");
+  }
 }
