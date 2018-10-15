@@ -248,7 +248,49 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
             }
 
             //Ahora toca comprobar dicho usuario en nuestra base de datos.
-                                
+            int found, nuevoRegistro;
+            bool loginComplete = false;
+
+            do{
+                ifstream file;
+                file.open("userDatabase.txt");
+                if (file.is_open()){
+                    do (getline (file, userEntry)){
+                        found = strcmp(userEntry, username + ":" + pass);
+                    }while(found != 0)
+                    file.close();
+                }
+
+                if(found)
+                    loginComplete = true;
+                else{
+                    //El usuario no existe o se ha introducido erroneamente
+                    strcpy(buffer, "El usuario no existe o se ha introducido erroneamente. Si no posee aun cuenta, introduzca Y para crear una cuenta. Si cree que se ha equivocado, pulse N para cancelar el nuevo registro.\n");
+                    send(new_sd,buffer,strlen(buffer),0);
+                    //Espero la respuesta
+                    bzero(buffer,sizeof(buffer));            
+                    if( recv(i,buffer,sizeof(buffer),0) > 0)
+                        nuevoRegistro = strcmp(buffer, "N");
+
+                    if(nuevoRegistro == 0){
+                        //Esto quiere decir que existe usuario y desea repetir el login
+                        loginComplete = false;
+                    }else{
+                        //Esto quiere decir que quiere realizar el registro con la informacion suministrada.
+                        strcpy(buffer, "Estamos registrando su login introducido en nuestro sistema. Bienvenido %s! (su contrasena es %s)\n", username, pass);
+                        send(new_sd,buffer,strlen(buffer),0);
+
+                        //Ahora toca guardar la info
+                        ofstream file ("userDatabase.txt");
+                        if (file.is_open()){
+                            file << username << ":" << pass << "\n";
+                            file.close();
+                        }
+                        loginComplete = true;
+                    }
+                }
+            }while(!loginComplete)
+
             strcpy(buffer, "+0k. Usuario conectado\n");
             send(new_sd,buffer,strlen(buffer),0);
 
