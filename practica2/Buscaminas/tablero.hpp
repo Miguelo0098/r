@@ -12,7 +12,7 @@ public:
   Tablero ();
 
   inline Casilla & getCasilla(int n, int m){
-    return tablero[n][m];
+    return _tablero[n][m];
   }
 
   int getBombsTab();

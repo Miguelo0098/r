@@ -1,6 +1,7 @@
 #include "tablero.hpp"
 #include <ctime>
 #include <cstdlib>
+#include <cstdio>
 
 int Tablero::getBombsTab(){
   int count = 0;
@@ -75,7 +76,7 @@ void Tablero::resetTablero(){
   }
 
   /* Para los bordes de arriba e izquierda */
-  int n_bombs2 = 0
+  int n_bombs2 = 0;
   for (int i = 1; i < 9; i++) {
     n_bombs = 0;
     n_bombs2 = 0;
@@ -117,8 +118,8 @@ void Tablero::resetTablero(){
   int n_bombs3 = 0;
   int n_bombs4 = 0;
 
-  for (i = 0; i < 2; i++) {
-    for (j = 0; j < 2; j++) {
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
       if (getCasilla(i, j).hasBomb() == true) {
         n_bombs++;
       }
@@ -142,7 +143,7 @@ void Tablero::resetTablero(){
 
 void Tablero::printTablero(){
   printf("\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n");
-  printf("    ------------------------------------------------------------------------------\n", );
+  printf("    ------------------------------------------------------------------------------\n");
   for (int i = 0; i < 10; i++) {
     printf("[%d] |\t", i);
     for (int j = 0; j < 10; j++) {
