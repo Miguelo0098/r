@@ -142,6 +142,7 @@ void Tablero::resetTablero(){
 
 void Tablero::printTablero(){
   printf("\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n");
+  printf("    ------------------------------------------------------------------------------\n", );
   for (int i = 0; i < 10; i++) {
     printf("[%d] |\t", i);
     for (int j = 0; j < 10; j++) {
