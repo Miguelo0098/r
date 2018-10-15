@@ -1,7 +1,7 @@
 #include "casilla.hpp"
 #include <iostream>
 
-void Casilla::printCasilla()const{
+void Casilla::printCasilla(){
   if(this->isCovered()){ //Esta cubierta
     if(!this->getMark()) //No tiene ninguna bandera
       printf("-");
@@ -12,8 +12,8 @@ void Casilla::printCasilla()const{
           printf("B");
         }
       }
-    }
-  }else{ // Esta descubierta
+  }
+  else{ // Esta descubierta
     if(this->hasBomb()) // Tiene bomba
       printf("*");
     else{ //No tiene bomba
