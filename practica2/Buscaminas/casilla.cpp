@@ -17,7 +17,7 @@ void Casilla::printCasilla()const{
     if(this->hasBomb()) // Tiene bomba
       printf("*");
     else{ //No tiene bomba
-      printf(this->getNBombs());
+      printf("%d", this->getNBombs());
     }
   }
 }
