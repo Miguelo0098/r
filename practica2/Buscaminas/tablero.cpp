@@ -2,6 +2,8 @@
 #include <ctime>
 #include <cstdlib>
 #include <cstdio>
+#include <string>
+#include <cstring>
 
 int Tablero::getBombsTab(){
   int count = 0;
@@ -141,15 +143,14 @@ void Tablero::resetTablero(){
 
 }
 
-void Tablero::printTablero(){
-  printf("\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n");
-  printf("    ------------------------------------------------------------------------------\n");
+char* Tablero::printTablero(){
+  string buffer = "\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n    ------------------------------------------------------------------------------\n"
   for (int i = 0; i < 10; i++) {
-    printf("[%d] |\t", i);
+    buffer = buffer + "[" + std::to_string(i) + "] |\t";
     for (int j = 0; j < 10; j++) {
-      getCasilla(i, j).printCasilla();
-      printf("\t");
+      buffer = buffer + getCasilla(i, j).printCasilla() + "\t";
     }
-    printf("\n");
+    buffer = buffer + "\n";
   }
+  return buffer.c_str();
 }
