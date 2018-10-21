@@ -1,6 +1,8 @@
 #ifndef CASILLA_HPP
 #define CASILLA_HPP
 
+#include <string>
+
 class Casilla {
 private:
   int _n_bombs;
@@ -53,7 +55,7 @@ public:
   }
 
   /* Para imprimir casilla */
-  void printCasilla();
+  string printCasilla();
 };
 
 #endif
