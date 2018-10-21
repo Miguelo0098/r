@@ -20,7 +20,7 @@ public:
   int getMarksTabB();
 
   void resetTablero();
-  void printTablero();
+  char* printTablero(); // Envia el tablero como una cadena para el buffer
 
 };
 
