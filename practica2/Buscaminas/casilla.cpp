@@ -1,23 +1,23 @@
 #include "casilla.hpp"
 #include <iostream>
 
-void Casilla::printCasilla(){
+string Casilla::printCasilla(){
   if(this->isCovered()){ //Esta cubierta
     if(!this->getMark()) //No tiene ninguna bandera
-      printf("-");
+      return "-";
     else{
       if(this->getMark() == 1){ //Bandera de jugador A
-        printf("A");
+        return "A";
       }else if(this->getMark() == 2){ //Bandera de jugador B
-          printf("B");
+          return "B";
         }
       }
   }
   else{ // Esta descubierta
     if(this->hasBomb()) // Tiene bomba
-      printf("*");
+      return "*";
     else{ //No tiene bomba
-      printf("%d", this->getNBombs());
+      return std::to_string(this->getNBombs());
     }
   }
 }
