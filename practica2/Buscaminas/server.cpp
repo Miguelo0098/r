@@ -127,7 +127,7 @@ int main () {
                         logIn();
 
                     } //Fin entrada nuevos usuarios
-                    else if (!i){
+                     else if (!i){
                         //Se ha introducido información de teclado en el proceso de servidor
                         bzero(buffer, sizeof(buffer));
                         fgets(buffer, sizeof(buffer), stdin);
@@ -171,7 +171,8 @@ int main () {
                             //Eliminar ese socket
                             salirCliente(i,&readfds,&numClientes,arrayClientes);
                         }
-                    }
+                    
+                    }//Fin del else
                 }
             }
         }
@@ -224,28 +225,8 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
             numClientes++;
             FD_SET(new_sd,&readfds);
 
-            strcpy(buffer, "Para continuar, introduzca usuario y contrasena!\n");
+            strcpy(buffer, "+0k. Usuario conectado.\n");
             send(new_sd,buffer,strlen(buffer),0);
-
-            //Espero la llegada de la respuesta del usuario v1 (username)
-            strcpy(buffer, "Username: ");
-            send(new_sd,buffer,strlen(buffer),0);
-            bzero(buffer,sizeof(buffer));            
-            if( recv(i,buffer,sizeof(buffer),0) > 0){
-                //buffer es ahora mismo el username
-                char username;
-                strcpy(username, buffer);
-            }
-
-            //Espero la llegada de la respuesta del usuario v2 (pass)
-            strcpy(buffer, "Password\n");
-            send(new_sd,buffer,strlen(buffer),0);
-            bzero(buffer,sizeof(buffer));            
-            if( recv(i,buffer,sizeof(buffer),0) > 0){
-                //buffer es ahora mismo el pass
-                char pass;
-                strcpy(pass, buffer);
-            }
 
             //Ahora toca comprobar dicho usuario en nuestra base de datos.
             int found, nuevoRegistro;
@@ -255,9 +236,50 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                 ifstream file;
                 file.open("userDatabase.txt");
                 if (file.is_open()){
+
+                    //Espero la llegada de USUARIO usuario
+                    bzero(buffer,sizeof(buffer));            
+                    if( recv(i,buffer,sizeof(buffer),0) > 0){
+                        //buffer es ahora mismo el username
+                        std::string usernameAux(buffer);
+                        unsigned first = usernameAux.find("USUARIO ");
+                        string username = usernameAux.substr(first);
+                    }
+
                     do (getline (file, userEntry)){
-                        found = strcmp(userEntry, username + ":" + pass);
-                    }while(found != 0)
+                        found = strcmp(userEntry, username.c_str());
+                    }while(!found)
+
+                    if(!found){
+                        strcpy(buffer, "+Ok. Usuario correcto.");
+                        send(new_sd,buffer,strlen(buffer),0);
+
+                        //Espero la llegada de PASSWORD password
+                        bzero(buffer,sizeof(buffer));            
+                        if( recv(i,buffer,sizeof(buffer),0) > 0){
+                            //buffer es ahora mismo el username
+                            std::string passwordAux(buffer);
+                            unsigned first = passwordAux.find("PASSWORD ");
+                            string password = passwordAux.substr(first);
+                        }
+
+                        do (getline (file, userEntry)){
+                            found = strcmp(userEntry, password.c_str());
+                        }while(!found)
+
+                        if(found){
+                            strcpy(buffer, "+0k. Usuario validado.");
+                            send(new_sd,buffer,strlen(buffer),0);
+                        }else{
+                            strcpy(buffer, "-Err. Error en la validacion.");
+                            send(new_sd,buffer,strlen(buffer),0);
+                        }
+
+                    }else{
+                        strcpy(buffer, "-Err. Usuario incorrecto.");
+                        send(new_sd,buffer,strlen(buffer),0);
+                    }
+                    
                     file.close();
                 }
 
