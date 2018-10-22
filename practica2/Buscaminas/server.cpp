@@ -5,12 +5,15 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-#include<signal.h>
+#include <signal.h>
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include "tablero.hpp"
+#include <vector>
 
-#define MSG_SIZE 250
+
+#define MSG_SIZE 500
 #define MAX_CLIENTS 20
 
 void manejador(int signum);
@@ -19,7 +22,7 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
 /*
     En el logIn debo comprobar:
         - Que no este lleno el server
-        - Que este registrado/que la contrasena y usuario esten 
+        - Que este registrado/que la contrasena y usuario esten
             registrados
         - standby hasta que decida buscar partida
 */
@@ -27,7 +30,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
 /*
     En startGame debo:
         - Comprobar que exista otro jugador dispuesto a jugar
-        - Establecer el estado de ambos jugadores como "InGame" para 
+        - Establecer el estado de ambos jugadores como "InGame" para
             que no esten en matchmaking
         - Crear el tablero
         - Enviar un tablero sin ningun desbloqueado a ambos jugadores
@@ -46,11 +49,14 @@ void makeMove();
 
 int main () {
 
-    /*---------------------------------------------------- 
-        Descriptor del socket y buffer de datos                
+    /*----------------------------------------------------
+        Descriptor del socket y buffer de datos
     -----------------------------------------------------*/
     int sd, new_sd, salida, arrayClientes[MAX_CLIENTS], numClientes = 0;
     struct sockaddr_in sockname, from;
+    Tablero tableros[MAX_CLIENTS/2];
+    std::vector<int> arrayJugadores;
+    arrayJugadores.resize(20);
     char buffer[MSG_SIZE];
     socklen_t from_len;
     fd_set readfds, auxfds;
@@ -58,18 +64,18 @@ int main () {
     //Contadores
     int i,j,k, recibidos;
     char identificador[MSG_SIZE];
-    
+
     int on, ret;
 
     /* --------------------------------------------------
-        Se abre el socket 
+        Se abre el socket
     ---------------------------------------------------*/
     sd = socket (AF_INET, SOCK_STREAM, 0);
     if (sd == -1) {
         perror("No se puede abrir el socket cliente\n");
-        exit (1);   
+        exit (1);
     }
-    
+
     // Activaremos una propiedad del socket que permitir· que otros
     // sockets puedan reutilizar cualquier puerto al que nos enlacemos.
     // Esto permitir· en protocolos como el TCP, poder ejecutar un
@@ -88,10 +94,10 @@ int main () {
         perror("Error en la operación bind");
         exit(1);
     }
-    
+
     /*---------------------------------------------------------------------
-        Del las peticiones que vamos a aceptar sólo necesitamos el 
-        tamaño de su estructura, el resto de información (familia, puerto, 
+        Del las peticiones que vamos a aceptar sólo necesitamos el
+        tamaño de su estructura, el resto de información (familia, puerto,
         ip), nos la proporcionará el método que recibe las peticiones.
     ----------------------------------------------------------------------*/
     from_len = sizeof (from);
@@ -100,16 +106,16 @@ int main () {
         perror("Error en la operación de listen");
         exit(1);
     }
-    
+
     //Inicializar los conjuntos fd_set
     FD_ZERO(&readfds);
     FD_ZERO(&auxfds);
     FD_SET(sd,&readfds);
     FD_SET(0,&readfds);
-    
+
     //Capturamos la señal SIGINT (Ctrl+c)
     signal(SIGINT,manejador);
-    
+
     /*-----------------------------------------------------------------------
         El servidor acepta una petición
     ------------------------------------------------------------------------ */
@@ -117,13 +123,13 @@ int main () {
         //Esperamos recibir mensajes de los clientes (nuevas conexiones o mensajes de los clientes ya conectados)
         auxfds = readfds;
         salida = select(FD_SETSIZE,&auxfds,NULL,NULL,NULL);
-            
+
         if(salida > 0){
             for(i = 0; i<FD_SETSIZE; i++){
                 //Buscamos el socket por el que se ha establecido la comunicación
                 if(FD_ISSET(i, &auxfds)) {
                     if( i == sd){   //En este if se gestiona la entrada de nuevos clientes al servidor
-                        
+
                         logIn();
 
                     } //Fin entrada nuevos usuarios
@@ -131,10 +137,10 @@ int main () {
                         //Se ha introducido información de teclado en el proceso de servidor
                         bzero(buffer, sizeof(buffer));
                         fgets(buffer, sizeof(buffer), stdin);
-                            
+
                         //Controlar si se ha introducido "SALIR", cerrando todos los sockets y finalmente saliendo del servidor. (implementar)
                         if(strcmp(buffer,"SALIR\n") == 0){
-                             
+
                             for (j = 0; j < numClientes; j++){
                                 send(arrayClientes[j], "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
                                 close(arrayClientes[j]);
@@ -148,22 +154,22 @@ int main () {
                     }else{ // Si i no es nula
                         //Aqui analizo lo que el usuario me ha enviado
                         bzero(buffer,sizeof(buffer));
-                        
+
                         recibidos = recv(i,buffer,sizeof(buffer),0);
-                        
+
                         if(recibidos > 0){
-                                
+
                             if(strcmp(buffer,"SALIR\n") == 0)
-                                salirCliente(i,&readfds,&numClientes,arrayClientes);        
-                            else{              
+                                salirCliente(i,&readfds,&numClientes,arrayClientes);
+                            else{
                                 sprintf(identificador,"%d: %s",i,buffer);
                                 bzero(buffer,sizeof(buffer));
                                 strcpy(buffer,identificador);
-                                    
+
                                 for(j = 0; j < numClientes; j++)
                                     if(arrayClientes[j] != i)
-                                        send(arrayClientes[j],buffer,strlen(buffer),0);   
-                            }        
+                                        send(arrayClientes[j],buffer,strlen(buffer),0);
+                            }
                         }
                         //Si el cliente introdujo ctrl+c
                         if(!recibidos){
@@ -171,7 +177,7 @@ int main () {
                             //Eliminar ese socket
                             salirCliente(i,&readfds,&numClientes,arrayClientes);
                         }
-                    
+
                     }//Fin del else
                 }
             }
@@ -179,29 +185,29 @@ int main () {
     }
     close(sd);
     return 0;
-    
+
 }
 
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
-  
+
     char buffer[250];
     int j;
-    
+
     close(socket);
     FD_CLR(socket,readfds);
-    
+
     //Re-estructurar el array de clientes
     for (j = 0; j < (*numClientes) - 1; j++)
         if (arrayClientes[j] == socket)
             break;
     for (; j < (*numClientes) - 1; j++)
         (arrayClientes[j] = arrayClientes[j+1]);
-    
+
     (*numClientes)--;
-    
+
     bzero(buffer,sizeof(buffer));
     sprintf(buffer,"Desconexión del cliente: %d\n",socket);
-    
+
     for(j = 0; j < (*numClientes); j++)
         if(arrayClientes[j] != socket)
             send(arrayClientes[j],buffer,strlen(buffer),0);
@@ -210,7 +216,7 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
 void manejador (int signum){
     printf("\nSe ha recibido la señal sigint\n");
     signal(SIGINT,manejador);
-    
+
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
     exit(0);
 }
@@ -238,7 +244,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                 if (file.is_open()){
 
                     //Espero la llegada de USUARIO usuario
-                    bzero(buffer,sizeof(buffer));            
+                    bzero(buffer,sizeof(buffer));
                     if( recv(i,buffer,sizeof(buffer),0) > 0){
                         //buffer es ahora mismo el username
                         std::string usernameAux(buffer);
@@ -255,7 +261,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                         send(new_sd,buffer,strlen(buffer),0);
 
                         //Espero la llegada de PASSWORD password
-                        bzero(buffer,sizeof(buffer));            
+                        bzero(buffer,sizeof(buffer));
                         if( recv(i,buffer,sizeof(buffer),0) > 0){
                             //buffer es ahora mismo el username
                             std::string passwordAux(buffer);
@@ -279,7 +285,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                         strcpy(buffer, "-Err. Usuario incorrecto.");
                         send(new_sd,buffer,strlen(buffer),0);
                     }
-                    
+
                     file.close();
                 }
 
@@ -290,7 +296,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                     strcpy(buffer, "El usuario no existe o se ha introducido erroneamente. Si no posee aun cuenta, introduzca Y para crear una cuenta. Si cree que se ha equivocado, pulse N para cancelar el nuevo registro.\n");
                     send(new_sd,buffer,strlen(buffer),0);
                     //Espero la respuesta
-                    bzero(buffer,sizeof(buffer));            
+                    bzero(buffer,sizeof(buffer));
                     if( recv(i,buffer,sizeof(buffer),0) > 0)
                         nuevoRegistro = strcmp(buffer, "N");
 
@@ -326,6 +332,6 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
             strcpy(buffer,"Demasiados clientes conectados\n");
             send(new_sd,buffer,strlen(buffer),0);
             close(new_sd);
-        }   
+        }
     }
 }
