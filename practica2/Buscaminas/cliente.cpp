@@ -1,13 +1,13 @@
 #include <cstdio>
-#include <csys/types>
-#include <csys/socket>
-#include <cnetinet/in>
-#include <cnetdb>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 #include <cstdlib>
 #include <cstring>
-#include <cunistd>
+#include <unistd.h>
 #include <ctime>
-#include <carpa/inet>
+#include <arpa/inet.h>
 #include "tablero.hpp"
 
 #define SERVER_HOST "localhost"
@@ -17,7 +17,7 @@ int main() {
 
   int sd;
   struct sockaddr_in sockname;
-  char buffer[500]
+  char buffer[500];
   socklen_t len_sockname;
     fd_set readfds, auxfds;
     int salida;
