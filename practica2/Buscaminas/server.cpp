@@ -55,8 +55,8 @@ int main () {
     int sd, new_sd, salida, arrayClientes[MAX_CLIENTS], numClientes = 0;
     struct sockaddr_in sockname, from;
     Tablero tableros[MAX_CLIENTS/2];
-    std::vector<int> arrayJugadores;
-    arrayJugadores.resize(20);
+      std::vector<int> arrayJugadores;
+      arrayJugadores.resize(20);
     char buffer[MSG_SIZE];
     socklen_t from_len;
     fd_set readfds, auxfds;
