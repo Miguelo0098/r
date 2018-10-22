@@ -1,7 +1,7 @@
 #include "casilla.hpp"
 #include <iostream>
 
-string Casilla::printCasilla(){
+std::string Casilla::printCasilla(){
   if(this->isCovered()){ //Esta cubierta
     if(!this->getMark()) //No tiene ninguna bandera
       return "-";

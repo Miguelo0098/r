@@ -55,7 +55,7 @@ public:
   }
 
   /* Para imprimir casilla */
-  string printCasilla();
+  std::string printCasilla();
 };
 
 #endif

@@ -144,7 +144,7 @@ void Tablero::resetTablero(){
 }
 
 char* Tablero::printTablero(){
-  string buffer = "\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n    ------------------------------------------------------------------------------\n"
+  std::string buffer = "\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n    ------------------------------------------------------------------------------\n"
   for (int i = 0; i < 10; i++) {
     buffer = buffer + "[" + std::to_string(i) + "] |\t";
     for (int j = 0; j < 10; j++) {
