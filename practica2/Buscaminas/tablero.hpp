@@ -20,7 +20,7 @@ public:
   int getMarksTabB();
 
   void resetTablero();
-  char* printTablero(); // Envia el tablero como una cadena para el buffer
+  std::string printTablero(); // Envia el tablero como una cadena para el buffer
 
 };
 
