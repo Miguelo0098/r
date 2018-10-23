@@ -56,7 +56,7 @@ int main () {
     struct sockaddr_in sockname, from;
     Tablero tableros[MAX_CLIENTS/2];
       std::vector<int> arrayJugadores;
-      arrayJugadores.resize(20);
+      arrayJugadores.resize(MAX_CLIENTS);
     char buffer[MSG_SIZE];
     socklen_t from_len;
     fd_set readfds, auxfds;
@@ -129,8 +129,10 @@ int main () {
                 //Buscamos el socket por el que se ha establecido la comunicación
                 if(FD_ISSET(i, &auxfds)) {
                     if( i == sd){   //En este if se gestiona la entrada de nuevos clientes al servidor
-
-                        logIn();
+                      if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1){
+                          perror("Error aceptando peticiones");
+                      }
+                      logIn();
 
                     } //Fin entrada nuevos usuarios
                      else if (!i){
