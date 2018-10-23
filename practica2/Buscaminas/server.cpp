@@ -236,51 +236,42 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
             strcpy(buffer, "+0k. Usuario conectado.\n");
             send(new_sd,buffer,strlen(buffer),0);
 
-            //Ahora toca comprobar dicho usuario en nuestra base de datos.
-            int found, nuevoRegistro;
-            bool loginComplete = false;
+            ifstream file;
+            file.open("userDatabase.txt");
 
-            do{
-                ifstream file;
-                file.open("userDatabase.txt");
-                if (file.is_open()){
-
-                    //Espero la llegada de USUARIO usuario
-                    bzero(buffer,sizeof(buffer));
-                    if( recv(i,buffer,sizeof(buffer),0) > 0){
-                        //buffer es ahora mismo el username
-                        std::string usernameAux(buffer);
-                        unsigned first = usernameAux.find("USUARIO ");
-                        string username = usernameAux.substr(first);
+            bzero(buffer, sizeof(buffer));
+            //Estamos en espera a recibir un mensaje de algun cliente
+            if( recv(i, buffer, sizeof(buffer, 0)) > 0 ){
+                //Comprobamos el tipo de mensaje que acabamos de recibir por un cliente
+                if(strncomp(buffer, "USUARIO ", 8) == 0){
+                    //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
+                    //Para ello, antes separo el "USUARIO " de lo que es el usuario en si.
+                    char *user = strtok(buffer, "");
+                    user = strtok(NULL, "");
+                    user[strlen(user)-1] = '\0';
+                    //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
+                    if(file.is_open()){
+                        //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
+                        char *aux[strlen(user)];
+                        bool found = false;
+                        //Va leyendo linea a linea
+                        do (getline (file, aux)){
+                            //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
+                            if(strcmp(aux, user, strlen(user)) == 0)
+                                found == true;
+                            
+                        }while(!found)
+                        file.close();
                     }
 
-                    do (getline (file, userEntry)){
-                        found = strcmp(userEntry, username.c_str());
-                    }while(!found)
-
-                    if(!found){
+                    if(found){
                         strcpy(buffer, "+Ok. Usuario correcto.");
                         send(new_sd,buffer,strlen(buffer),0);
 
                         //Espero la llegada de PASSWORD password
                         bzero(buffer,sizeof(buffer));
                         if( recv(i,buffer,sizeof(buffer),0) > 0){
-                            //buffer es ahora mismo el username
-                            std::string passwordAux(buffer);
-                            unsigned first = passwordAux.find("PASSWORD ");
-                            string password = passwordAux.substr(first);
-                        }
 
-                        do (getline (file, userEntry)){
-                            found = strcmp(userEntry, password.c_str());
-                        }while(!found)
-
-                        if(found){
-                            strcpy(buffer, "+0k. Usuario validado.");
-                            send(new_sd,buffer,strlen(buffer),0);
-                        }else{
-                            strcpy(buffer, "-Err. Error en la validacion.");
-                            send(new_sd,buffer,strlen(buffer),0);
                         }
 
                     }else{
@@ -288,47 +279,15 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                         send(new_sd,buffer,strlen(buffer),0);
                     }
 
-                    file.close();
                 }
-
-                if(found)
-                    loginComplete = true;
-                else{
-                    //El usuario no existe o se ha introducido erroneamente
-                    strcpy(buffer, "El usuario no existe o se ha introducido erroneamente. Si no posee aun cuenta, introduzca Y para crear una cuenta. Si cree que se ha equivocado, pulse N para cancelar el nuevo registro.\n");
-                    send(new_sd,buffer,strlen(buffer),0);
-                    //Espero la respuesta
-                    bzero(buffer,sizeof(buffer));
-                    if( recv(i,buffer,sizeof(buffer),0) > 0)
-                        nuevoRegistro = strcmp(buffer, "N");
-
-                    if(nuevoRegistro == 0){
-                        //Esto quiere decir que existe usuario y desea repetir el login
-                        loginComplete = false;
-                    }else{
-                        //Esto quiere decir que quiere realizar el registro con la informacion suministrada.
-                        strcpy(buffer, "Estamos registrando su login introducido en nuestro sistema. Bienvenido %s! (su contrasena es %s)\n", username, pass);
-                        send(new_sd,buffer,strlen(buffer),0);
-
-                        //Ahora toca guardar la info
-                        ofstream file ("userDatabase.txt");
-                        if (file.is_open()){
-                            file << username << ":" << pass << "\n";
-                            file.close();
-                        }
-                        loginComplete = true;
-                    }
-                }
-            }while(!loginComplete)
-
-            strcpy(buffer, "+0k. Usuario conectado\n");
-            send(new_sd,buffer,strlen(buffer),0);
+            }
 
             for(j = 0; j < (numClientes-1); j++){
                 bzero(buffer,sizeof(buffer));
                 sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
                 send(arrayClientes[j],buffer,strlen(buffer),0);
             }
+
         }else{
             bzero(buffer,sizeof(buffer));
             strcpy(buffer,"Demasiados clientes conectados\n");
