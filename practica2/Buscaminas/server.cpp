@@ -121,9 +121,9 @@ int main () {
                 //Buscamos el socket por el que se ha establecido la comunicación
                 if(FD_ISSET(i, &auxfds)) {
                     if( i == sd){   //En este if se gestiona la entrada de nuevos clientes al servidor
-                      
+
                         //START LOGIN
-                        
+
                         if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1)
                             perror("Error aceptando peticiones");
                         else{
@@ -131,13 +131,13 @@ int main () {
                                 arrayClientes[numClientes] = new_sd;
                                 numClientes++;
                                 FD_SET(new_sd,&readfds);
-                    
+
                                 strcpy(buffer, "+0k. Usuario conectado.\n");
                                 send(new_sd,buffer,strlen(buffer),0);
-                    
-                                ifstream file;
+
+                                std::ifstream file;
                                 //el ifstream da fallo
-                    
+
                                 bzero(buffer, sizeof(buffer));
                                 //Estamos en espera a recibir un mensaje de algun cliente
                                 if( recv(i, buffer, sizeof(buffer), 0) > 0 ){
@@ -148,7 +148,7 @@ int main () {
                                         char *user = strtok(buffer, "");
                                         user = strtok(NULL, "");
                                         user[strlen(user)-1] = '\0';
-                    
+
                                         //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
                                         file.open("userDatabase.txt");
                                         if(file.is_open()){
@@ -160,16 +160,16 @@ int main () {
                                                 //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
                                                 if(strncmp(aux, user, strlen(user)) == 0)
                                                     foundUsername == true;
-                                                
+
                                             }
                                             file.close();
                                         }
-                    
+
                                         if(foundUsername){
                                             //En este condicional entra cuando el usuario introducido previamente esta en el fichero.
                                             strcpy(buffer, "+Ok. Usuario correcto.");
                                             send(new_sd,buffer,strlen(buffer),0);
-                    
+
                                             //Espero la llegada de PASSWORD password
                                             bzero(buffer,sizeof(buffer));
                                             if( recv(i,buffer,sizeof(buffer),0) > 0){
@@ -180,7 +180,7 @@ int main () {
                                                     char *pass = strtok(buffer, "");
                                                     pass = strtok(NULL, "");
                                                     pass[strlen(pass)-1] = '\0';
-                                                    
+
                                                     //Ya tenemos pass preparada para comprobar
                                                     file.open("userDatabase.txt");
                                                     if(file.is_open()){
@@ -191,20 +191,20 @@ int main () {
                                                         strcpy(userCredentials, user);
                                                         strcat(userCredentials, ":");
                                                         strcat(userCredentials, pass);
-                    
+
                                                         do(getline(file, aux)){
                                                             if(strncmp(aux, userCredentials, strlen(userCredentials)) == 0 )
                                                                 successfulLogIn = true;
-                                                            
+
                                                         }while(!successfulLogIn);
                                                         file.close();
                                                     }
-                    
+
                                                     if(successfulLogIn){
                                                         //Usuario y contrasena coinciden. Usuario conectado.
                                                         strcpy(buffer, "+0k. Usuario validado.");
                                                         send(new_sd,buffer,strlen(buffer),0);
-                                                    
+
                                                         //Uwu
                                                         //Esto siguiente es por si ademas del login, quisieramos avisar al resto de usuarios. (NO ES NECESARIO)
                                                         for(j = 0; j < (numClientes-1); j++){
@@ -212,7 +212,7 @@ int main () {
                                                             sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
                                                             send(arrayClientes[j],buffer,strlen(buffer),0);
                                                         }
-                    
+
                                                     }else{
                                                         //La contrasena es incorrecta
                                                         strcpy(buffer, "-Err. Error en la validacion.");
@@ -220,7 +220,7 @@ int main () {
                                                     }
                                                 }
                                             }
-                    
+
                                         }else{
                                             //En este condicional entra cuando el usuario introducido previamente no esta en el fichero. Se repite desde cero el logIn.
                                             strcpy(buffer, "-Err. Usuario incorrecto.");
@@ -228,7 +228,7 @@ int main () {
                                         }
                                     }
                                 }
-                    
+
                             }else{
                                 bzero(buffer,sizeof(buffer));
                                 strcpy(buffer,"Demasiados clientes conectados\n");
@@ -236,9 +236,9 @@ int main () {
                                 close(new_sd);
                             }
                         }
-                        
+
                         //ENDLOGIN
-                        
+
                     } //Fin entrada nuevos usuarios
                      else if (!i){
                         //Se ha introducido información de teclado en el proceso de servidor
@@ -328,7 +328,7 @@ void manejador (int signum){
     exit(0);
 }
 
-void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numClientes, int arrayClientes, fd_set &readfds, char buffer){
+void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numClientes, int arrayClientes, fd_set &readfds, char* buffer){
 
     if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1)
         perror("Error aceptando peticiones");
@@ -341,7 +341,7 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
             strcpy(buffer, "+0k. Usuario conectado.\n");
             send(new_sd,buffer,strlen(buffer),0);
 
-            ifstream file;
+            std::ifstream file;
             file.open("userDatabase.txt");
 
             bzero(buffer, sizeof(buffer));
@@ -364,8 +364,8 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
                             //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
                             if(strcmp(aux, user, strlen(user)) == 0)
                                 found == true;
-                            
-                        }while(!found)
+
+                        }while(!found);
                         file.close();
                     }
 
