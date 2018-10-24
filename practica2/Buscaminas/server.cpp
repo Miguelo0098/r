@@ -136,7 +136,7 @@ int main () {
                                 send(new_sd,buffer,strlen(buffer),0);
 
                                 std::ifstream file;
-                                //el ifstream da fallo
+                                
 
                                 bzero(buffer, sizeof(buffer));
                                 //Estamos en espera a recibir un mensaje de algun cliente
