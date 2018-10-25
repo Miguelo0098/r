@@ -9,7 +9,9 @@ private:
 
 
 public:
-  Tablero ();
+  inline Tablero (){
+    
+  }
 
   inline Casilla & getCasilla(int n, int m){
     return _tablero[n][m];

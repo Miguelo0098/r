@@ -11,6 +11,8 @@
 #include <arpa/inet.h>
 #include "tablero.hpp"
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 
 #define MSG_SIZE 500
@@ -46,7 +48,8 @@ int main () {
     -----------------------------------------------------*/
     int sd, new_sd, salida, arrayClientes[MAX_CLIENTS], numClientes = 0;
     struct sockaddr_in sockname, from;
-    Tablero tableros[MAX_CLIENTS/2];
+      std::vector<Tablero> arrayTableros;
+      arrayTableros.resize(MAX_CLIENTS/2);
       std::vector<int> arrayJugadores;
       arrayJugadores.resize(MAX_CLIENTS);
     char buffer[MSG_SIZE];
@@ -136,11 +139,13 @@ int main () {
                                 send(new_sd,buffer,strlen(buffer),0);
 
                                 std::ifstream file;
-
+                                bool foundUsername;
+                                bool successfulLogIn;
 
                                 bzero(buffer, sizeof(buffer));
                                 //Estamos en espera a recibir un mensaje de algun cliente
                                 if( recv(i, buffer, sizeof(buffer), 0) > 0 ){
+                                    printf("Estoy vivo\n");
                                     //Comprobamos el tipo de mensaje que acabamos de recibir por un cliente
                                     if(strncmp(buffer, "USUARIO ", 8) == 0){
                                         //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
@@ -149,16 +154,20 @@ int main () {
                                         user = strtok(NULL, "");
                                         user[strlen(user)-1] = '\0';
 
+                                        printf("HOLA estoy vivo salvame\n");
+
                                         //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
                                         file.open("userDatabase.txt");
                                         if(file.is_open()){
                                             //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
-                                            char aux[strlen(user)];
-                                            bool foundUsername = false;
+                                            std::string aux;
+                                            aux.resize(strlen(user));
+                                            foundUsername = false;
+
                                             //Va leyendo linea a linea
                                             while(!foundUsername || getline (file, aux)){
                                                 //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
-                                                if(strncmp(aux, user, strlen(user)) == 0)
+                                                if(strncmp(aux.c_str(), user, strlen(user)-1) == 0)
                                                     foundUsername == true;
 
                                             }
@@ -184,16 +193,18 @@ int main () {
                                                     //Ya tenemos pass preparada para comprobar
                                                     file.open("userDatabase.txt");
                                                     if(file.is_open()){
-                                                        char aux[strlen(pass)];
-                                                        bool successfulLogIn = false;
+                                                        std::string aux;
+                                                        aux.resize(strlen(pass));
+                                                        successfulLogIn = false;
                                                         char userCredentials[strlen(user) + strlen(pass) + 1];
                                                         //Creo la combinacion de "usuario:password"
                                                         strcpy(userCredentials, user);
                                                         strcat(userCredentials, ":");
                                                         strcat(userCredentials, pass);
 
-                                                        do(getline(file, aux)){
-                                                            if(strncmp(aux, userCredentials, strlen(userCredentials)) == 0 )
+                                                        do{
+                                                            getline(file, aux);
+                                                            if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 )
                                                                 successfulLogIn = true;
 
                                                         }while(!successfulLogIn);

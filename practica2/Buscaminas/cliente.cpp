@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 #include "tablero.hpp"
 
-#define SERVER_HOST "localhost"
+#define SERVER_HOST "127.0.0.1"
 
 int main() {
   /* Descriptor del buffer y del socket */
@@ -35,7 +35,7 @@ int main() {
 
   sockname.sin_family = AF_INET;
   sockname.sin_port = htons(2000);
-  sockname.sin_addr.s_addr = inet_addr(SERVER_HOST);
+  sockname.sin_addr.s_addr = inet_addr("127.0.0.1");
 
   /* Se solicita la conexión con el servidor */
 

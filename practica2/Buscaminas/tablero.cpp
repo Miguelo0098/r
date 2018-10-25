@@ -149,7 +149,7 @@ std::string Tablero::printTablero(){
   for (int i = 0; i < 10; i++) {
     buffer = buffer + "[" + std::to_string(i) + "] |\t";
     for (int j = 0; j < 10; j++) {
-      buffer = buffer + this->getCasilla(i, j).printCasilla() + "\t";
+      buffer = buffer + getCasilla(i, j).printCasilla() + "\t";
     }
     buffer = buffer + "\n";
   }
