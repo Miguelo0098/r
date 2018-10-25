@@ -136,7 +136,7 @@ int main () {
                                 send(new_sd,buffer,strlen(buffer),0);
 
                                 std::ifstream file;
-                                
+
 
                                 bzero(buffer, sizeof(buffer));
                                 //Estamos en espera a recibir un mensaje de algun cliente
@@ -153,7 +153,7 @@ int main () {
                                         file.open("userDatabase.txt");
                                         if(file.is_open()){
                                             //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
-                                            char *aux[strlen(user)];
+                                            char aux[strlen(user)];
                                             bool foundUsername = false;
                                             //Va leyendo linea a linea
                                             while(!foundUsername || getline (file, aux)){
@@ -184,9 +184,9 @@ int main () {
                                                     //Ya tenemos pass preparada para comprobar
                                                     file.open("userDatabase.txt");
                                                     if(file.is_open()){
-                                                        char *aux[strlen(pass)];
+                                                        char aux[strlen(pass)];
                                                         bool successfulLogIn = false;
-                                                        char *userCredentials[strlen(user) + strlen(pass) + 1];
+                                                        char userCredentials[strlen(user) + strlen(pass) + 1];
                                                         //Creo la combinacion de "usuario:password"
                                                         strcpy(userCredentials, user);
                                                         strcat(userCredentials, ":");
@@ -327,6 +327,7 @@ void manejador (int signum){
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
     exit(0);
 }
+/* Comentada funcion logIn
 
 void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numClientes, int arrayClientes, fd_set &readfds, char* buffer){
 
@@ -401,3 +402,5 @@ void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numCliente
         }
     }
 }
+
+Comentada funcion login */
