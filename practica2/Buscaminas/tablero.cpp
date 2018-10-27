@@ -147,11 +147,11 @@ void Tablero::resetTablero(){
 
 std::string Tablero::printTablero(){
 
-  std::string buffer = "\tA\tB\tC\tD\tE\tF\tG\tH\tI\tJ\n    ------------------------------------------------------------------------------\n";
+  std::string buffer = "\tA  B  C  D  E  F  G  H  I  J\n    ---------------------------------\n";
   for (int i = 0; i < 10; i++) {
     buffer = buffer + "[" + std::to_string(i) + "] |\t";
     for (int j = 0; j < 10; j++) {
-      buffer = buffer + getCasilla(i, j).printCasilla() + "\t";
+      buffer = buffer + getCasilla(i, j).printCasilla() + "  ";
     }
     buffer = buffer + "\n";
   }
