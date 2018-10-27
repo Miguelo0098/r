@@ -19,7 +19,7 @@
 #define MAX_CLIENTS 20
 
 void manejador(int signum);
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]);
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], int arrayTableros[]);
 
 /*
     En startGame debo:
@@ -179,7 +179,48 @@ int main () {
                         if(recibidos > 0){
 
                             if(strcmp(buffer,"SALIR\n") == 0)
-                                salirCliente(i,&readfds,&numClientes,arrayClientes);
+                                salirCliente(i,&readfds,&numClientes,arrayClientes, arrayTableros);
+
+                            if (strcmp(buffer,"INICIAR-PARTIDA\n") == 0) {
+                                for (int counter = 0; counter < MAX_CLIENTS; counter++) {
+                                    if (arrayClientes[counter] == i) {
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "+Ok. Buscando hueco en un tablero.\n");
+                                        send(i,buffer,strlen(buffer),0);
+                                        for (k = 0; k < MAX_CLIENTS/2; (k++)%MAX_CLIENTS/2) {
+                                            if (arrayTableros[k].getJugadorA() == 0) {
+                                                arrayTableros[k].setJugadorA(i);
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Eres el jugador A\n");
+                                                send(i,buffer,strlen(buffer),0);
+
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Esperando un oponente\n");
+                                                send(i,buffer,strlen(buffer),0);
+                                                break;
+
+                                            }else if (arrayTableros[k].getJugadorB() == 0) {
+                                                arrayTableros[k].setJugadorB(i);
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Eres el jugador B\n");
+                                                send(i,buffer,strlen(buffer),0);
+
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer),0);
+                                                send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer),0);
+                                                break;
+                                            }
+                                        }
+
+
+                                    }else{
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "-Err. Debes iniciar sesión para iniciar partida.\n");
+                                        send(i,buffer,strlen(buffer),0);
+                                    }
+                                }
+                            }
 
                             if(strncmp(buffer, "USUARIO ", 8) == 0){
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
@@ -218,7 +259,7 @@ int main () {
                                 if(foundUsername == 1){
                                     //En este condicional entra cuando el usuario introducido previamente esta en el fichero.
                                     strcpy(buffer, "+Ok. Usuario correcto.");
-                                    send(new_sd,buffer,strlen(buffer),0);
+                                    send(i,buffer,strlen(buffer),0);
 
                                     //Espero la llegada de PASSWORD password
                                     bzero(buffer,sizeof(buffer));
@@ -263,33 +304,33 @@ int main () {
                                             if(successfulLogIn){
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
-                                                send(new_sd,buffer,strlen(buffer),0);
+                                                send(i,buffer,strlen(buffer),0);
 
-                                                arrayClientes[numClientes] = new_sd;
+                                                arrayClientes[numClientes] = i;
                                                 numClientes++;
                                                 //Uwu
                                                 //Esto siguiente es por si ademas del login, quisieramos avisar al resto de usuarios. (NO ES NECESARIO)
                                                 for(j = 0; j < (numClientes-1); j++){
                                                     bzero(buffer,sizeof(buffer));
-                                                    sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
+                                                    sprintf(buffer, "Nuevo Cliente conectado: %d\n",i);
                                                     send(arrayClientes[j],buffer,strlen(buffer),0);
                                                 }
 
                                             }else{
                                                 //La contrasena es incorrecta
                                                 strcpy(buffer, "-Err. Error en la validacion.");
-                                                send(new_sd,buffer,strlen(buffer),0);
+                                                send(i,buffer,strlen(buffer),0);
                                             }
                                         }else{
                                           strcpy(buffer, "-Err. Error en la validacion.");
-                                          send(new_sd,buffer,strlen(buffer),0);
+                                          send(i,buffer,strlen(buffer),0);
                                         }
                                     }
 
                                     }else{
                                         //En este condicional entra cuando el usuario introducido previamente no esta en el fichero. Se repite desde cero el logIn.
                                         strcpy(buffer, "-Err. Usuario incorrecto.");
-                                        send(new_sd,buffer,strlen(buffer),0);
+                                        send(i,buffer,strlen(buffer),0);
                                     }
                                 }
                             else{
@@ -306,7 +347,7 @@ int main () {
                         if(!recibidos){
                             printf("El socket %d, ha introducido ctrl+c\n", i);
                             //Eliminar ese socket
-                            salirCliente(i,&readfds,&numClientes,arrayClientes);
+                            salirCliente(i,&readfds,&numClientes,arrayClientes,arrayTableros);
                         }
 
                     }//Fin del else
@@ -319,10 +360,10 @@ int main () {
 
 }
 
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], int arrayTableros[]){
 
     char buffer[250];
-    int j;
+    int j, k;
 
     close(socket);
     FD_CLR(socket,readfds);
@@ -335,6 +376,16 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
         (arrayClientes[j] = arrayClientes[j+1]);
 
     (*numClientes)--;
+
+    // Si estaba en partida, lo Eliminar
+    for ( k = 0; k < count; k++) {
+        if (arrayTableros[k].getJugadorA() == socket) {
+            arrayTableros[k].setJugadorA(0);
+        }
+        else if (arrayTableros[k].getJugadorB() == socket){
+            arrayTableros[k].setJugadorB(0);
+        }
+    }
 
     bzero(buffer,sizeof(buffer));
     sprintf(buffer,"Desconexión del cliente: %d\n",socket);
