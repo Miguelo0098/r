@@ -50,8 +50,6 @@ int main () {
     struct sockaddr_in sockname, from;
       std::vector<Tablero> arrayTableros;
       arrayTableros.resize(MAX_CLIENTS/2);
-      std::vector<int> arrayJugadores;
-      arrayJugadores.resize(MAX_CLIENTS);
     char buffer[MSG_SIZE];
     socklen_t from_len;
     fd_set readfds, auxfds;
@@ -131,22 +129,15 @@ int main () {
                             perror("Error aceptando peticiones");
                         else{
                             if(numClientes < MAX_CLIENTS){
-                                arrayClientes[numClientes] = new_sd;
-                                numClientes++;
+
                                 FD_SET(new_sd,&readfds);
 
                                 strcpy(buffer, "+0k. Usuario conectado.\n");
                                 send(new_sd,buffer,strlen(buffer),0);
 
-
-
                                 bzero(buffer, sizeof(buffer));
                                 //Estamos en espera a recibir un mensaje de algun cliente
-                                if( recv(i, buffer, sizeof(buffer), 0) > 0 ){
-                                    printf("Estoy vivo\n");
-                                    //Comprobamos el tipo de mensaje que acabamos de recibir por un cliente
 
-                                }
 
                             }else{
                                 bzero(buffer,sizeof(buffer));
@@ -273,7 +264,9 @@ int main () {
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
                                                 send(new_sd,buffer,strlen(buffer),0);
-                                                
+
+                                                arrayClientes[numClientes] = new_sd;
+                                                numClientes++;
                                                 //Uwu
                                                 //Esto siguiente es por si ademas del login, quisieramos avisar al resto de usuarios. (NO ES NECESARIO)
                                                 for(j = 0; j < (numClientes-1); j++){
