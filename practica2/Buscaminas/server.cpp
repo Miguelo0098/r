@@ -188,8 +188,6 @@ int main () {
                                 aux = strtok(NULL, " ");
                                 aux[strlen(aux)-1] = '\0';
 
-                                printf("%s\n", aux);
-
                                 char user[strlen(aux)];
                                 strcpy(user, aux);
 
@@ -203,19 +201,15 @@ int main () {
                                     //Va leyendo linea a linea
                                     while(!foundUsername && getline (file, aux2)){
                                         //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
-                                        if(strncmp(aux2.c_str(), user, strlen(user)-1) == 0){
-                                            printf("%d\n", strncmp(aux2.c_str(), user, strlen(user)-1));
+                                        if(strncmp(aux2.c_str(), user, strlen(user)-1) == 0)
                                             foundUsername = 1;
-
-                                            std::cout << "user alright" << '\n';
-                                        }else{
+                                        else
                                             foundUsername = 0;
-                                        }
                                     }
                                     file.close();
-                                }
+                                }//End file open
 
-                                if(foundUsername == 1){
+                                if(foundUsername){
                                     //En este condicional entra cuando el usuario introducido previamente esta en el fichero.
                                     strcpy(buffer, "+Ok. Usuario correcto.");
                                     send(new_sd,buffer,strlen(buffer),0);
@@ -234,8 +228,6 @@ int main () {
                                             char pass[strlen(aux)];
                                             strcpy(pass, aux);
 
-                                            printf("%s\n", user);
-                                            printf("%s\n", pass);
                                             //Ya tenemos pass preparada para comprobar
                                             file.open("userDatabase.txt");
                                             if(file.is_open()){
@@ -247,18 +239,15 @@ int main () {
                                                 strcpy(userCredentials, user);
                                                 strcat(userCredentials, ":");
                                                 strcat(userCredentials, pass);
-                                                printf("%s\n", userCredentials);
 
                                                 while(!successfulLogIn && getline(file, aux)){
                                                     //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
-                                                    if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 ){
+                                                    if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 )
                                                         successfulLogIn = true;
-                                                        std::cout << successfulLogIn << '\n';
-                                                    }
                                                 }
 
                                                 file.close();
-                                            }
+                                            }//End file open
 
                                             if(successfulLogIn){
                                                 //Usuario y contrasena coinciden. Usuario conectado.
@@ -279,29 +268,88 @@ int main () {
                                                 //La contrasena es incorrecta
                                                 strcpy(buffer, "-Err. Error en la validacion.");
                                                 send(new_sd,buffer,strlen(buffer),0);
-                                            }
-                                        }else{
-                                          strcpy(buffer, "-Err. Error en la validacion.");
-                                          send(new_sd,buffer,strlen(buffer),0);
-                                        }
+                                            }//End of log ins
+
+                                        }else{ //End of the password obtain
+                                            strcpy(buffer, "-Err. Error en la validacion.");
+                                            send(new_sd,buffer,strlen(buffer),0);
+                                        }//Espero contrasena pero no FIN
+                                    }//recv end
+
+                                }else{//foundUsername is false
+                                    //En este condicional entra cuando el usuario introducido previamente no esta en el fichero. Se repite desde cero el logIn.
+                                    strcpy(buffer, "-Err. Usuario incorrecto.");
+                                    send(new_sd,buffer,strlen(buffer),0);
+                                }
+                            }//FIN LOGIN NORMAL
+
+                            if(strncmp(buffer, "REGISTRO ", 9) == 0){
+                                //Saco el usuario del buffer
+                                char *aux = strtok(buffer, " ");
+
+                                //Una vez tenemos en aux el buffer, vamos avanzando en la frase
+                                //Este strtok mete en aux "-u"
+                                aux = strtok(NULL, " ");
+
+                                //Este strtok mete en aux el usuario en si (ESTE ES UTIL)
+                                aux = strtok(NULL, " ");
+                                char user[strlen(aux)];
+                                strcpy(user, aux);
+                                
+                                //Este strtok mete en aux "-p"
+                                aux = strtok(NULL, " ");
+                                
+                                //Este strtok mete en aux la password (ESTE TAMBIEN ES UTIL)
+                                aux = strtok(NULL, " ");
+                                aux[strlen(aux)-1] = '\0';
+                                char pass[strlen(aux)];
+                                strcpy(pass, aux);
+
+                                //Ya tenemos las variables para crear el registro. Abrimos el archivo que contiene los usuarios y respectivas passwords.
+                                file.open("userDatabase.txt");
+                                if(file.is_open()){
+                                    std::string aux;
+                                    bool foundExistingUser = false;
+                                    char userCredentials[strlen(user) + strlen(pass) + 1];
+                                    //Creo la combinacion de "usuario:password"
+                                    strcpy(userCredentials, user);
+                                    strcat(userCredentials, ":");
+                                    strcat(userCredentials, pass);
+                       
+                                    while(!foundExistingUser && getline(file, aux)){
+                                        //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
+                                        if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 )
+                                            foundExistingUser = true;
                                     }
 
+                                    //Cierro el fichero en modo lectura
+                                    file.close();
+                                    
+                                    //Paso a string el char que contiene las credenciales
+                                    std::string userCreds(userCredentials);
+
+                                    //Ahora abro el fichero en modo escritura (append)
+                                    if(!foundExistingUser){
+                                        //Escribo usuario en fichero
+                                        std::ofstream fileRegister;
+                                        fileRegister.open("userDatabase.txt", std::ios::app);
+
+                                        if(fileRegister.is_open()){
+                                            fileRegister << userCreds << std::endl;
+                                            
+                                            strcpy(buffer, "+0k. Usuario registrado.");
+                                            send(new_sd,buffer,strlen(buffer),0);
+                                        }
+                                        
                                     }else{
-                                        //En este condicional entra cuando el usuario introducido previamente no esta en el fichero. Se repite desde cero el logIn.
-                                        strcpy(buffer, "-Err. Usuario incorrecto.");
+                                        strcpy(buffer, "-Err. Usuario ya se encuentra registrado.");
                                         send(new_sd,buffer,strlen(buffer),0);
                                     }
                                 }
-                            else{
-                                sprintf(identificador,"%d: %s",i,buffer);
-                                bzero(buffer,sizeof(buffer));
-                                strcpy(buffer,identificador);
-
-                                for(j = 0; j < numClientes; j++)
-                                    if(arrayClientes[j] != i)
-                                        send(arrayClientes[j],buffer,strlen(buffer),0);
-                            }
+                                
+                            }//End register
                         }
+                                            
                         //Si el cliente introdujo ctrl+c
                         if(!recibidos){
                             printf("El socket %d, ha introducido ctrl+c\n", i);
@@ -316,7 +364,6 @@ int main () {
     }
     close(sd);
     return 0;
-
 }
 
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
@@ -351,3 +398,80 @@ void manejador (int signum){
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
     exit(0);
 }
+/* Comentada funcion logIn
+
+void logIn(int &new_sd, int sd, struct from, socklen_t from_len, int &numClientes, int arrayClientes, fd_set &readfds, char* buffer){
+
+    if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1)
+        perror("Error aceptando peticiones");
+    else{
+        if(numClientes < MAX_CLIENTS){
+            arrayClientes[numClientes] = new_sd;
+            numClientes++;
+            FD_SET(new_sd,&readfds);
+
+            strcpy(buffer, "+0k. Usuario conectado.\n");
+            send(new_sd,buffer,strlen(buffer),0);
+
+            std::ifstream file;
+            file.open("userDatabase.txt");
+
+            bzero(buffer, sizeof(buffer));
+            //Estamos en espera a recibir un mensaje de algun cliente
+            if( recv(i, buffer, sizeof(buffer, 0)) > 0 ){
+                //Comprobamos el tipo de mensaje que acabamos de recibir por un cliente
+                if(strncomp(buffer, "USUARIO ", 8) == 0){
+                    //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
+                    //Para ello, antes separo el "USUARIO " de lo que es el usuario en si.
+                    char *user = strtok(buffer, "");
+                    user = strtok(NULL, "");
+                    user[strlen(user)-1] = '\0';
+                    //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
+                    if(file.is_open()){
+                        //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
+                        char *aux[strlen(user)];
+                        bool found = false;
+                        //Va leyendo linea a linea
+                        do (getline (file, aux)){
+                            //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
+                            if(strcmp(aux, user, strlen(user)) == 0)
+                                found == true;
+
+                        }while(!found);
+                        file.close();
+                    }
+
+                    if(found){
+                        strcpy(buffer, "+Ok. Usuario correcto.");
+                        send(new_sd,buffer,strlen(buffer),0);
+
+                        //Espero la llegada de PASSWORD password
+                        bzero(buffer,sizeof(buffer));
+                        if( recv(i,buffer,sizeof(buffer),0) > 0){
+
+                        }
+
+                    }else{
+                        strcpy(buffer, "-Err. Usuario incorrecto.");
+                        send(new_sd,buffer,strlen(buffer),0);
+                    }
+
+                }
+            }
+
+            for(j = 0; j < (numClientes-1); j++){
+                bzero(buffer,sizeof(buffer));
+                sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
+                send(arrayClientes[j],buffer,strlen(buffer),0);
+            }
+
+        }else{
+            bzero(buffer,sizeof(buffer));
+            strcpy(buffer,"Demasiados clientes conectados\n");
+            send(new_sd,buffer,strlen(buffer),0);
+            close(new_sd);
+        }
+    }
+}
+
+Comentada funcion login */
