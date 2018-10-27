@@ -193,7 +193,7 @@ int main () {
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
                                 //Para ello, antes separo el "USUARIO " de lo que es el usuario en si.
                                 char *user = strtok(buffer, " ");
-                                user = strtok(NULL, " ");
+                                // user = strtok(NULL, " ");
 
                                 //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
                                 file.open("userDatabase.txt");
@@ -201,20 +201,22 @@ int main () {
                                     //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
                                     std::string aux;
                                     aux.resize(strlen(user));
-                                    foundUsername = false;
+                                    foundUsername = 0;
 
 
                                         //Va leyendo linea a linea
                                     while(!foundUsername && getline (file, aux)){
                                         //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
-                                        if(strncmp(aux.c_str(), user, strlen(user)) == 0)
-                                            foundUsername == true;
+                                        if(strncmp(aux.c_str(), user, strlen(user-1)) == 0){
+                                            foundUsername = 1;
                                             printf("HOLA estoy vivo salvame\n");
+                                            std::cout << foundUsername << '\n';
+                                        }
                                     }
                                     file.close();
                                 }
 
-                                if(foundUsername){
+                                if(foundUsername == 1){
                                     //En este condicional entra cuando el usuario introducido previamente esta en el fichero.
                                     strcpy(buffer, "+Ok. Usuario correcto.");
                                     send(new_sd,buffer,strlen(buffer),0);
@@ -227,9 +229,10 @@ int main () {
                                             //El cliente intenta ingresar su password, por lo que verifico si se encuentra en nuestra base de datos.
                                             //Para ello, antes separo el "PASSWORD " de lo que es el usuario en si.
                                             char *pass = strtok(buffer, " ");
-                                            pass = strtok(NULL, " ");
-                                            pass[strlen(pass)-1] = '\0';
+                                            // pass = strtok(NULL, " ");
 
+                                            printf("%s\n", user);
+                                            printf("%s\n", pass);
                                             //Ya tenemos pass preparada para comprobar
                                             file.open("userDatabase.txt");
                                             if(file.is_open()){
@@ -241,6 +244,7 @@ int main () {
                                                 strcpy(userCredentials, user);
                                                 strcat(userCredentials, ":");
                                                 strcat(userCredentials, pass);
+                                                printf("%s\n", userCredentials);
 
                                                 do{
                                                     getline(file, aux);
