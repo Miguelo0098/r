@@ -42,6 +42,8 @@ int Tablero::getMarksTabB(){
 }
 
 void Tablero::resetTablero(){
+  setJugadorA(0);
+  setJugadorB(0);
   srand(time(NULL));
   int rnumber = -1;
   /* Vacía el tablero */

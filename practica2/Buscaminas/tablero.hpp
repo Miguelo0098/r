@@ -6,15 +6,33 @@
 class Tablero {
 private:
   Casilla _tablero[10][10];
+  int _jugadorA;
+  int _jugadorB;
 
 
 public:
   inline Tablero (){
-    
+
   }
 
   inline Casilla & getCasilla(int n, int m){
     return _tablero[n][m];
+  }
+
+  inline int getJugadorA(){
+    return _jugadorA;
+  }
+
+  inline int getJugadorB(){
+    return _jugadorB;
+  }
+
+  inline void setJugadorA(int jugadorA){
+    _jugadorA = jugadorA;
+  }
+
+  inline void setJugadorB(int jugadorB){
+    _jugadorB = jugadorB;
   }
 
   int getBombsTab();

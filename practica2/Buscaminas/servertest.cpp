@@ -273,7 +273,7 @@ int main () {
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
                                                 send(new_sd,buffer,strlen(buffer),0);
-
+                                                
                                                 //Uwu
                                                 //Esto siguiente es por si ademas del login, quisieramos avisar al resto de usuarios. (NO ES NECESARIO)
                                                 for(j = 0; j < (numClientes-1); j++){
