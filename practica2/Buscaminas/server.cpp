@@ -19,7 +19,7 @@
 #define MAX_CLIENTS 20
 
 void manejador(int signum);
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]);
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]);
 
 /*
     En startGame debo:
@@ -178,8 +178,50 @@ int main () {
 
                         if(recibidos > 0){
 
-                            if(strcmp(buffer,"SALIR\n") == 0)
-                                salirCliente(i,&readfds,&numClientes,arrayClientes);
+                            if(strcmp(buffer,"SALIR\n") == 0){
+                                salirCliente(i,&readfds,&numClientes,arrayClientes, arrayTableros);
+                            }
+
+                            if (strcmp(buffer,"INICIAR-PARTIDA\n") == 0) {
+                                for (int counter = 0; counter < MAX_CLIENTS; counter++) {
+                                    if (arrayClientes[counter] == i) {
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "+Ok. Buscando hueco en un tablero.\n");
+                                        send(i,buffer,strlen(buffer),0);
+                                        for (k = 0; k < MAX_CLIENTS/2; (k++)%MAX_CLIENTS/2) {
+                                            if (arrayTableros[k].getJugadorA() == 0) {
+                                                arrayTableros[k].setJugadorA(i);
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Eres el jugador A\n");
+                                                send(i,buffer,strlen(buffer),0);
+
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Esperando un oponente\n");
+                                                send(i,buffer,strlen(buffer),0);
+                                                break;
+
+                                            }else if (arrayTableros[k].getJugadorB() == 0) {
+                                                arrayTableros[k].setJugadorB(i);
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "+Ok. Eres el jugador B\n");
+                                                send(i,buffer,strlen(buffer),0);
+
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer),0);
+                                                send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer),0);
+                                                break;
+                                            }
+                                        }
+
+
+                                    }else{
+                                        bzero(buffer,sizeof(buffer));
+                                        strcpy(buffer, "-Err. Debes iniciar sesión para iniciar partida.\n");
+                                        send(i,buffer,strlen(buffer),0);
+                                    }
+                                }
+                            }
 
                             if(strncmp(buffer, "USUARIO ", 8) == 0){
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
@@ -295,10 +337,10 @@ int main () {
                                 aux = strtok(NULL, " ");
                                 char user[strlen(aux)];
                                 strcpy(user, aux);
-                                
+
                                 //Este strtok mete en aux "-p"
                                 aux = strtok(NULL, " ");
-                                
+
                                 //Este strtok mete en aux la password (ESTE TAMBIEN ES UTIL)
                                 aux = strtok(NULL, " ");
                                 aux[strlen(aux)-1] = '\0';
@@ -315,7 +357,7 @@ int main () {
                                     strcpy(userCredentials, user);
                                     strcat(userCredentials, ":");
                                     strcat(userCredentials, pass);
-                       
+
                                     while(!foundExistingUser && getline(file, aux)){
                                         //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
                                         if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 )
@@ -324,7 +366,7 @@ int main () {
 
                                     //Cierro el fichero en modo lectura
                                     file.close();
-                                    
+
                                     //Paso a string el char que contiene las credenciales
                                     std::string userCreds(userCredentials);
 
@@ -336,25 +378,25 @@ int main () {
 
                                         if(fileRegister.is_open()){
                                             fileRegister << userCreds << std::endl;
-                                            
+
                                             strcpy(buffer, "+0k. Usuario registrado.");
                                             send(new_sd,buffer,strlen(buffer),0);
                                         }
-                                        
+
                                     }else{
                                         strcpy(buffer, "-Err. Usuario ya se encuentra registrado.");
                                         send(new_sd,buffer,strlen(buffer),0);
                                     }
                                 }
-                                
+
                             }//End register
                         }
-                                            
+
                         //Si el cliente introdujo ctrl+c
                         if(!recibidos){
                             printf("El socket %d, ha introducido ctrl+c\n", i);
                             //Eliminar ese socket
-                            salirCliente(i,&readfds,&numClientes,arrayClientes);
+                            salirCliente(i,&readfds,&numClientes,arrayClientes, arrayTableros);
                         }
 
                     }//Fin del else
@@ -366,7 +408,7 @@ int main () {
     return 0;
 }
 
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]){
 
     char buffer[250];
     int j;
@@ -382,6 +424,16 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
         (arrayClientes[j] = arrayClientes[j+1]);
 
     (*numClientes)--;
+
+    // Si estaba en partida, lo Eliminar
+    for ( k = 0; k < count; k++) {
+        if (arrayTableros[k].getJugadorA() == socket) {
+            arrayTableros[k].setJugadorA(0);
+        }
+        else if (arrayTableros[k].getJugadorB() == socket){
+            arrayTableros[k].setJugadorB(0);
+        }
+    }
 
     bzero(buffer,sizeof(buffer));
     sprintf(buffer,"Desconexión del cliente: %d\n",socket);

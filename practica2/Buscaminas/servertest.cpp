@@ -19,7 +19,7 @@
 #define MAX_CLIENTS 20
 
 void manejador(int signum);
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], int arrayTableros[]);
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]);
 
 /*
     En startGame debo:
@@ -360,7 +360,7 @@ int main () {
 
 }
 
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], int arrayTableros[]){
+void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]){
 
     char buffer[250];
     int j, k;
