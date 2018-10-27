@@ -189,11 +189,18 @@ int main () {
 
                             if(strcmp(buffer,"SALIR\n") == 0)
                                 salirCliente(i,&readfds,&numClientes,arrayClientes);
+                            
                             if(strncmp(buffer, "USUARIO ", 8) == 0){
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
                                 //Para ello, antes separo el "USUARIO " de lo que es el usuario en si.
-                                char *user = strtok(buffer, " ");
-                                // user = strtok(NULL, " ");
+                                char *aux = strtok(buffer, " ");
+                                aux = strtok(NULL, " ");
+                                aux[strlen(aux)-1] = '\0';
+
+                                printf("%s\n", aux);
+
+                                char user[strlen(aux)];
+                                strcpy(user, aux);
 
                                 //Ya tenemos la variable user con el nombre de usuario en si. Procedemos a buscarlo en la base de datos.
                                 file.open("userDatabase.txt");
@@ -203,14 +210,12 @@ int main () {
                                     aux.resize(strlen(user));
                                     foundUsername = 0;
 
-
-                                        //Va leyendo linea a linea
+                                    //Va leyendo linea a linea
                                     while(!foundUsername && getline (file, aux)){
                                         //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
                                         if(strncmp(aux.c_str(), user, strlen(user-1)) == 0){
                                             foundUsername = 1;
-                                            printf("HOLA estoy vivo salvame\n");
-                                            std::cout << foundUsername << '\n';
+                                            std::cout << "user alright" << '\n';
                                         }
                                     }
                                     file.close();
@@ -228,8 +233,12 @@ int main () {
                                         if(strncmp(buffer, "PASSWORD ", 9) == 0){
                                             //El cliente intenta ingresar su password, por lo que verifico si se encuentra en nuestra base de datos.
                                             //Para ello, antes separo el "PASSWORD " de lo que es el usuario en si.
-                                            char *pass = strtok(buffer, " ");
-                                            // pass = strtok(NULL, " ");
+                                            char *aux = strtok(buffer, " ");
+                                            aux = strtok(NULL, " ");
+                                            aux[strlen(aux)-1] = '\0';
+
+                                            char pass[strlen(aux)];
+                                            strcpy(pass, aux);
 
                                             printf("%s\n", user);
                                             printf("%s\n", pass);
@@ -246,15 +255,17 @@ int main () {
                                                 strcat(userCredentials, pass);
                                                 printf("%s\n", userCredentials);
 
-                                                do{
-                                                    getline(file, aux);
-                                                    if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 )
+                                                while(!successfulLogIn && getline(file, aux)){
+                                                    //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
+                                                    if(strncmp(aux.c_str(), userCredentials, strlen(userCredentials)) == 0 ){
                                                         successfulLogIn = true;
+                                                        std::cout << successfulLogIn << '\n';
+                                                    }
+                                                }
 
-                                                }while(!successfulLogIn);
                                                 file.close();
                                             }
-
+                                            
                                             if(successfulLogIn){
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
