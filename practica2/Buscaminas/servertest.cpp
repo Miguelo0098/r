@@ -189,7 +189,7 @@ int main () {
 
                             if(strcmp(buffer,"SALIR\n") == 0)
                                 salirCliente(i,&readfds,&numClientes,arrayClientes);
-                            
+
                             if(strncmp(buffer, "USUARIO ", 8) == 0){
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
                                 //Para ello, antes separo el "USUARIO " de lo que es el usuario en si.
@@ -206,16 +206,19 @@ int main () {
                                 file.open("userDatabase.txt");
                                 if(file.is_open()){
                                     //Creo variables aux (en la que se almacenara cada linea leida) y found (como valor de do while para ver si lo ha encontrado y puede parar)
-                                    std::string aux;
-                                    aux.resize(strlen(user));
+                                    std::string aux2;
                                     foundUsername = 0;
 
                                     //Va leyendo linea a linea
-                                    while(!foundUsername && getline (file, aux)){
+                                    while(!foundUsername && getline (file, aux2)){
                                         //Si coinciden ambas cadenas, found se vuelve true y termina las iteraciones
-                                        if(strncmp(aux.c_str(), user, strlen(user-1)) == 0){
+                                        if(strncmp(aux2.c_str(), user, strlen(user)-1) == 0){
+                                            printf("%d\n", strncmp(aux2.c_str(), user, strlen(user)-1));
                                             foundUsername = 1;
+
                                             std::cout << "user alright" << '\n';
+                                        }else{
+                                            foundUsername = 0;
                                         }
                                     }
                                     file.close();
@@ -265,7 +268,7 @@ int main () {
 
                                                 file.close();
                                             }
-                                            
+
                                             if(successfulLogIn){
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
@@ -284,6 +287,9 @@ int main () {
                                                 strcpy(buffer, "-Err. Error en la validacion.");
                                                 send(new_sd,buffer,strlen(buffer),0);
                                             }
+                                        }else{
+                                          strcpy(buffer, "-Err. Error en la validacion.");
+                                          send(new_sd,buffer,strlen(buffer),0);
                                         }
                                     }
 
