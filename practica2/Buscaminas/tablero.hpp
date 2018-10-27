@@ -12,7 +12,7 @@ private:
 
 public:
   inline Tablero (){
-
+    resetTablero();
   }
 
   inline Casilla & getCasilla(int n, int m){
