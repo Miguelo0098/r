@@ -21,7 +21,7 @@
 void manejador(int signum);
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]);
 
-int traducirCoordenadas(char *c);
+int traducirCoordenadas(char c);
 bool verificarCoordenadas(int x, int y);
 
 int main () {
@@ -223,7 +223,7 @@ int main () {
                                             char *coordenadas = strtok(buffer, " ");
                                             coordenadas = strtok(NULL, " ");
                                             int coordenada2 = traducirCoordenadas(coordenadas[0]);
-                                            strtok(coordenadas, ",")
+                                            strtok(coordenadas, ",");
                                             int coordenada1 = atoi(strtok(NULL, ","));
                                             if (verificarCoordenadas(coordenada1, coordenada2) == false) {
                                                 bzero(buffer,sizeof(buffer));
@@ -236,17 +236,19 @@ int main () {
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
 
                                                         bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, "El jugador A ha perdido la partida");
+                                                        strcpy(buffer, "\nEl jugador A ha perdido la partida\n");
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
+
+                                                        arrayTableros[k].resetTablero();
                                                     }else{
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
 
                                                         arrayTableros[k].setTurno(2);
 
@@ -270,7 +272,7 @@ int main () {
                                             char *coordenadas = strtok(buffer, " ");
                                             coordenadas = strtok(NULL, " ");
                                             int coordenada2 = traducirCoordenadas(coordenadas[0]);
-                                            strtok(coordenadas, ",")
+                                            strtok(coordenadas, ",");
                                             int coordenada1 = atoi(strtok(NULL, ","));
                                             if (verificarCoordenadas(coordenada1, coordenada2) == false) {
                                                 bzero(buffer,sizeof(buffer));
@@ -283,19 +285,21 @@ int main () {
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
 
                                                         bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, "El jugador B ha perdido la partida");
+                                                        strcpy(buffer, "\nEl jugador B ha perdido la partida\n");
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
+
+                                                        arrayTableros[k].resetTablero();
                                                     }else{
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
 
-                                                        arrayTableros[k].setTurno(2);
+                                                        arrayTableros[k].setTurno(1);
 
                                                     }
                                                 }else{
@@ -526,9 +530,20 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
     for ( j = 0; j < MAX_CLIENTS/2; j++) {
         if (arrayTableros[j].getJugadorA() == socket) {
             arrayTableros[j].setJugadorA(0);
+
+            bzero(buffer,sizeof(buffer));
+            strcpy(buffer, "\n+Ok. El Jugador A ha abandonado la partida.\n");
+            send(arrayTableros[j].getJugadorB(),buffer,strlen(buffer),0);
+            arrayTableros[j].resetTablero();
+
         }
         else if (arrayTableros[j].getJugadorB() == socket){
             arrayTableros[j].setJugadorB(0);
+
+            bzero(buffer,sizeof(buffer));
+            strcpy(buffer, "\n+Ok. El Jugador B ha abandonado la partida.\n");
+            send(arrayTableros[j].getJugadorA(),buffer,strlen(buffer),0);
+            arrayTableros[j].resetTablero();
         }
     }
 
@@ -548,8 +563,9 @@ void manejador (int signum){
     exit(0);
 }
 
-int traducirCoordenadas(char *c){
-    return atoi(c - 17);
+int traducirCoordenadas(char c){
+    c = c - 17;
+    return atoi(&c);
 }
 
 bool verificarCoordenadas(int x, int y){
