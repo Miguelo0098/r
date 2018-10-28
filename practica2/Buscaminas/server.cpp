@@ -670,12 +670,6 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
         }
     }
 
-    bzero(buffer,sizeof(buffer));
-    sprintf(buffer,"Desconexión del cliente: %d\n",socket);
-
-    for(j = 0; j < (*numClientes); j++)
-        if(arrayClientes[j] != socket)
-            send(arrayClientes[j],buffer,strlen(buffer),0);
 }
 
 void manejador (int signum){
