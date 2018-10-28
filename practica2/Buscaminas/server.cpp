@@ -341,26 +341,36 @@ int main () {
                                                 send(i,buffer,strlen(buffer),0);
                                             }else{
                                                 if (arrayTableros[k].getCasilla(coordenada1, coordenada2).isCovered() == true) {
-                                                    arrayTableros[k].getCasilla(coordenada1, coordenada2).setCover(false);
-                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).hasBomb() == true) {
+
+                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).getMark() == 0) {
+                                                        arrayTableros[k].getCasilla(coordenada1, coordenada2).setMark(1);
+
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
                                                         send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
 
-                                                        bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, "\nEl jugador A ha perdido la partida\n");
-                                                        send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
+                                                        if (arrayTableros[k].getMarksTabA() == 10) {
+                                                            if (arrayTableros[k].getWinA()) {
+                                                                bzero(buffer,sizeof(buffer));
+                                                                strcpy(buffer, "\nEl jugador A ha ganado la partida\n");
+                                                                send(i,buffer,strlen(buffer),0);
+                                                                send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
+                                                            }else{
+                                                                bzero(buffer,sizeof(buffer));
+                                                                strcpy(buffer, "\nEl jugador A ha perdido la partida\n");
+                                                                send(i,buffer,strlen(buffer),0);
+                                                                send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
+                                                            }
+                                                            arrayTableros[k].resetTablero();
+                                                        }else{
+                                                            arrayTableros[k].setTurno(2);
+                                                        }
 
-                                                        arrayTableros[k].resetTablero();
                                                     }else{
                                                         bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        strcpy(buffer, "-Err. Casilla ya marcada.\n");
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer), 0);
-
-                                                        arrayTableros[k].setTurno(2);
 
                                                     }
                                                 }else{
@@ -390,27 +400,34 @@ int main () {
                                                 send(i,buffer,strlen(buffer),0);
                                             }else{
                                                 if (arrayTableros[k].getCasilla(coordenada1, coordenada2).isCovered() == true) {
-                                                    arrayTableros[k].getCasilla(coordenada1, coordenada2).setCover(false);
-                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).hasBomb() == true) {
+                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).getMark() == 0) {
+                                                        arrayTableros[k].getCasilla(coordenada1, coordenada2).setMark(2);
+
                                                         bzero(buffer,sizeof(buffer));
                                                         strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                         send(i,buffer,strlen(buffer),0);
                                                         send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
 
-                                                        bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, "\nEl jugador B ha perdido la partida\n");
-                                                        send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
-
-                                                        arrayTableros[k].resetTablero();
+                                                        if (arrayTableros[k].getMarksTabA() == 10) {
+                                                            if (arrayTableros[k].getWinB()) {
+                                                                bzero(buffer,sizeof(buffer));
+                                                                strcpy(buffer, "\nEl jugador B ha ganado la partida\n");
+                                                                send(i,buffer,strlen(buffer),0);
+                                                                send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
+                                                            }else{
+                                                                bzero(buffer,sizeof(buffer));
+                                                                strcpy(buffer, "\nEl jugador B ha perdido la partida\n");
+                                                                send(i,buffer,strlen(buffer),0);
+                                                                send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
+                                                            }
+                                                            arrayTableros[k].resetTablero();
+                                                        }else{
+                                                            arrayTableros[k].setTurno(1);
+                                                        }
                                                     }else{
                                                         bzero(buffer,sizeof(buffer));
-                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        strcpy(buffer, "-Err. Casilla ya marcada.\n");
                                                         send(i,buffer,strlen(buffer),0);
-                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer), 0);
-
-                                                        arrayTableros[k].setTurno(1);
-
                                                     }
                                                 }else{
                                                     bzero(buffer,sizeof(buffer));
