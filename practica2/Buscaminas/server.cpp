@@ -182,8 +182,10 @@ int main () {
                             }
 
                             if (strcmp(buffer,"INICIAR-PARTIDA\n") == 0) {
+                                bool logged = false;
                                 for (int counter = 0; counter < MAX_CLIENTS; counter++) {
                                     if (arrayClientes[counter] == i) {
+                                        logged = true;
                                         bzero(buffer,sizeof(buffer));
                                         strcpy(buffer, "+Ok. Buscando hueco en un tablero.\n");
                                         send(i,buffer,strlen(buffer),0);
@@ -195,7 +197,7 @@ int main () {
                                                 send(i,buffer,strlen(buffer),0);
 
                                                 bzero(buffer,sizeof(buffer));
-                                                strcpy(buffer, "+Ok. Esperando un oponente\n");
+                                                strcpy(buffer, "+Ok. Esperando un oponente...\n");
                                                 send(i,buffer,strlen(buffer),0);
                                                 break;
 
@@ -212,13 +214,12 @@ int main () {
                                                 break;
                                             }
                                         }
-
-
-                                    }else{
-                                        bzero(buffer,sizeof(buffer));
-                                        strcpy(buffer, "-Err. Debes iniciar sesión para iniciar partida.\n");
-                                        send(i,buffer,strlen(buffer),0);
                                     }
+                                }
+                                if (logged == false) {
+                                    bzero(buffer,sizeof(buffer));
+                                    strcpy(buffer, "-Err. Debes iniciar sesión para iniciar partida.\n");
+                                    send(i,buffer,strlen(buffer),0);
                                 }
                             }
 
