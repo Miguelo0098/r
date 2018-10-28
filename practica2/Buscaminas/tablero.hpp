@@ -48,6 +48,9 @@ public:
   int getMarksTabA();
   int getMarksTabB();
 
+  bool getWinA();
+  bool getWinB();
+
   void resetTablero();
   std::string printTablero(); // Envia el tablero como una cadena para el buffer
 

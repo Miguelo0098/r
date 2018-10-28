@@ -41,6 +41,14 @@ int Tablero::getMarksTabB(){
   return count;
 }
 
+bool Tablero::getWinA(){
+
+}
+
+bool Tablero::getWinB(){
+    
+}
+
 void Tablero::resetTablero(){
   setJugadorA(0);
   setJugadorB(0);
