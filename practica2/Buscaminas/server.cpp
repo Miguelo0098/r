@@ -211,6 +211,111 @@ int main () {
                                     send(i,buffer,strlen(buffer),0);
                                 }
                             }
+                            if (strncmp(buffer, "DESCUBRIR ", 10) == 0) {
+                                bool in_match = false;
+                                for (k = 0; k < MAX_CLIENTS/2; k++) {
+                                    if (arrayTableros[k].getJugadorA() == i) {
+                                        in_match = true;
+                                        if (arrayTableros[k].getTurno() == 1) {
+                                            char *coordenadas = strtok(buffer, " ");
+                                            coordenadas = strtok(NULL, " ");
+                                            int coordenada2 = traducirCoordenadas(coordenadas[0]);
+                                            strtok(coordenadas, ",")
+                                            int coordenada1 = atoi(strtok(NULL, ","));
+                                            if (verificarCoordenadas(coordenada1, coordenada2) == false) {
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "-Err. Coordenada mal introducida.\n");
+                                                send(i,buffer,strlen(buffer),0);
+                                            }else{
+                                                if (arrayTableros[k].getCasilla(coordenada1, coordenada2).isCovered() == true) {
+                                                    arrayTableros[k].getCasilla(coordenada1, coordenada2).setCover(false);
+                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).hasBomb() == true) {
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, "El jugador A ha perdido la partida");
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+                                                    }else{
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer));
+
+                                                        arrayTableros[k].setTurno(2);
+
+                                                    }
+                                                }else{
+                                                    bzero(buffer,sizeof(buffer));
+                                                    strcpy(buffer, "-Err. Casilla ya descubierta.\n");
+                                                    send(i,buffer,strlen(buffer),0);
+                                                }
+                                            }
+
+
+                                        }else if (arrayTableros[k].getTurno() == 2) {
+                                            bzero(buffer,sizeof(buffer));
+                                            strcpy(buffer, "-Err. Debes esperar a que el jugador B tome una decisión.\n");
+                                            send(i,buffer,strlen(buffer),0);
+                                        }
+                                    }else if(arrayTableros[k].getJugadorB() == i){
+                                        in_match = true;
+                                        if (arrayTableros[k].getTurno() == 2) {
+                                            char *coordenadas = strtok(buffer, " ");
+                                            coordenadas = strtok(NULL, " ");
+                                            int coordenada2 = traducirCoordenadas(coordenadas[0]);
+                                            strtok(coordenadas, ",")
+                                            int coordenada1 = atoi(strtok(NULL, ","));
+                                            if (verificarCoordenadas(coordenada1, coordenada2) == false) {
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "-Err. Coordenada mal introducida.\n");
+                                                send(i,buffer,strlen(buffer),0);
+                                            }else{
+                                                if (arrayTableros[k].getCasilla(coordenada1, coordenada2).isCovered() == true) {
+                                                    arrayTableros[k].getCasilla(coordenada1, coordenada2).setCover(false);
+                                                    if (arrayTableros[k].getCasilla(coordenada1, coordenada2).hasBomb() == true) {
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, "El jugador B ha perdido la partida");
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+                                                    }else{
+                                                        bzero(buffer,sizeof(buffer));
+                                                        strcpy(buffer, arrayTableros[k].printTablero().c_str());
+                                                        send(i,buffer,strlen(buffer),0);
+                                                        send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer));
+
+                                                        arrayTableros[k].setTurno(2);
+
+                                                    }
+                                                }else{
+                                                    bzero(buffer,sizeof(buffer));
+                                                    strcpy(buffer, "-Err. Casilla ya descubierta.\n");
+                                                    send(i,buffer,strlen(buffer),0);
+                                                }
+                                            }
+
+
+                                        }else if (arrayTableros[k].getTurno() == 1) {
+                                            bzero(buffer,sizeof(buffer));
+                                            strcpy(buffer, "-Err. Debes esperar a que el jugador A tome una decisión.\n");
+                                            send(i,buffer,strlen(buffer),0);
+                                        }
+                                    }
+                                }
+                                if (in_match == false) {
+                                    bzero(buffer,sizeof(buffer));
+                                    strcpy(buffer, "-Err. No estás en partida.\n");
+                                    send(i,buffer,strlen(buffer),0);
+                                }
+                            }
 
                             if(strncmp(buffer, "USUARIO ", 8) == 0){
                                 //El cliente intenta ingresar su usuario, por lo que verifico si se encuentra en nuestra base de datos.
