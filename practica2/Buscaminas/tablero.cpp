@@ -42,7 +42,7 @@ int Tablero::getMarksTabB(){
 }
 
 bool Tablero::getWinA(){
-    int count;
+    int count = 0;
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
         if (getCasilla(i, j).getMark() == 1) {
@@ -59,7 +59,7 @@ bool Tablero::getWinA(){
 }
 
 bool Tablero::getWinB(){
-    int count;
+    int count = 0;
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 10; j++) {
         if (getCasilla(i, j).getMark() == 2) {

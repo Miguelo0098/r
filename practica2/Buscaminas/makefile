@@ -1,5 +1,5 @@
 #
-OBJECTS = tablero.o casilla.o 
+OBJECTS = tablero.o casilla.o
 
 #
 CPPFLAGS = -c -g -Wall -lrt -ansi -O2 -std=c++11
@@ -15,7 +15,7 @@ INCLUDES = casilla.cpp tablero.cpp
 
 objetivo: server
 
-# Primer objetivo 
+# Primer objetivo
 casilla.o: casilla.cpp casilla.hpp
 			@echo "Compilando " $<
 			@g++ $(CPPFLAGS) $<
@@ -28,7 +28,7 @@ tablero.o: tablero.cpp tablero.hpp
 #
 cliente: cliente.cpp
 		@echo "Compilando " $<
-		@g++ $(CPPFLAGS) $< 
+		@g++ $(CPPFLAGS) $<
 
 #
 server: server.cpp casilla.o tablero.o
@@ -36,7 +36,7 @@ server: server.cpp casilla.o tablero.o
 		@g++ $(CPPFLAGS) $<
 
 # Borrado
-.PHONY: clean  
+.PHONY: clean
 clean:
 	@echo "Borrando los ficheros superfluos"
-	@rm -f $(OBJECTS) *~ 
+	@rm -f $(OBJECTS) *~
