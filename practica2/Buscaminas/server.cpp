@@ -399,13 +399,9 @@ int main () {
 
                                                 arrayClientes[numClientes] = new_sd;
                                                 numClientes++;
-                                                //Uwu
+                                                
                                                 //Esto siguiente es por si ademas del login, quisieramos avisar al resto de usuarios. (NO ES NECESARIO)
-                                                for(j = 0; j < (numClientes-1); j++){
-                                                    bzero(buffer,sizeof(buffer));
-                                                    sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
-                                                    send(arrayClientes[j],buffer,strlen(buffer),0);
-                                                }
+
 
                                             }else{
                                                 //La contrasena es incorrecta
