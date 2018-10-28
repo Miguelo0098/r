@@ -21,6 +21,9 @@
 void manejador(int signum);
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]);
 
+int traducirCoordenadas(char *c);
+bool verificarCoordenadas(int x, int y);
+
 int main () {
 
     /*----------------------------------------------------
@@ -543,4 +546,15 @@ void manejador (int signum){
 
     //Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
     exit(0);
+}
+
+int traducirCoordenadas(char *c){
+    return atoi(c - 17);
+}
+
+bool verificarCoordenadas(int x, int y){
+    if(x >= 0 && x < 10 && y >= 0 && y < 10)
+        return true;
+    else
+        return false;
 }
