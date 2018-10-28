@@ -200,7 +200,11 @@ int main () {
                                                 strcpy(buffer, "+Ok. Esperando un oponente...\n");
                                                 send(i,buffer,strlen(buffer),0);
                                                 break;
-
+                                            }else if (arrayTableros[k].getJugadorA() == i) {
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "-Err. Ya estás en una partida.\n");
+                                                send(i,buffer,strlen(buffer),0);
+                                                break;
                                             }else if (arrayTableros[k].getJugadorB() == 0) {
                                                 arrayTableros[k].setJugadorB(i);
                                                 bzero(buffer,sizeof(buffer));
@@ -211,6 +215,11 @@ int main () {
                                                 strcpy(buffer, arrayTableros[k].printTablero().c_str());
                                                 send(arrayTableros[k].getJugadorA(), buffer, strlen(buffer),0);
                                                 send(arrayTableros[k].getJugadorB(), buffer, strlen(buffer),0);
+                                                break;
+                                            }else if (arrayTableros[k].getJugadorB() == i) {
+                                                bzero(buffer,sizeof(buffer));
+                                                strcpy(buffer, "-Err. Ya estás en una partida.\n");
+                                                send(i,buffer,strlen(buffer),0);
                                                 break;
                                             }
                                         }
