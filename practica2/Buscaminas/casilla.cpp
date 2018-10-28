@@ -2,22 +2,24 @@
 #include <iostream>
 
 std::string Casilla::printCasilla(){
+    std::string retval;
   if(this->isCovered()){ //Esta cubierta
     if(!this->getMark()) //No tiene ninguna bandera
-      return "-";
+      retval = "-";
     else{
       if(this->getMark() == 1){ //Bandera de jugador A
-        return "A";
+        retval = "A";
       }else if(this->getMark() == 2){ //Bandera de jugador B
-          return "B";
+          retval = "B";
         }
       }
   }
   else{ // Esta descubierta
     if(this->hasBomb()) // Tiene bomba
-      return "*";
+      retval = "*";
     else{ //No tiene bomba
-      return std::to_string(this->getNBombs());
+      retval = std::to_string(this->getNBombs());
     }
   }
+  return retval;
 }
