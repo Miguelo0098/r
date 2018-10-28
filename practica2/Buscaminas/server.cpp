@@ -48,8 +48,7 @@ int main () {
     -----------------------------------------------------*/
     int sd, new_sd, salida, arrayClientes[MAX_CLIENTS], numClientes = 0;
     struct sockaddr_in sockname, from;
-      std::vector<Tablero> arrayTableros;
-      arrayTableros.resize(MAX_CLIENTS/2);
+      Tablero arrayTableros[MAX_CLIENTS/2];
     char buffer[MSG_SIZE];
     socklen_t from_len;
     fd_set readfds, auxfds;
@@ -426,12 +425,12 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
     (*numClientes)--;
 
     // Si estaba en partida, lo Eliminar
-    for ( k = 0; k < count; k++) {
-        if (arrayTableros[k].getJugadorA() == socket) {
-            arrayTableros[k].setJugadorA(0);
+    for ( j = 0; j < MAX_CLIENTS/2; j++) {
+        if (arrayTableros[j].getJugadorA() == socket) {
+            arrayTableros[j].setJugadorA(0);
         }
-        else if (arrayTableros[k].getJugadorB() == socket){
-            arrayTableros[k].setJugadorB(0);
+        else if (arrayTableros[j].getJugadorB() == socket){
+            arrayTableros[j].setJugadorB(0);
         }
     }
 
