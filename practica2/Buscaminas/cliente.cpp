@@ -12,7 +12,11 @@
 
 #define SERVER_HOST "127.0.0.1"
 
-int main() {
+int main(int argc, char const *argv[]) {
+  if (argc < 2) {
+      printf("ERROR: faltan argumentos.\nUSO: $ %s <direccion-server>\n", argv[0]);
+      exit(-1);
+  }
   /* Descriptor del buffer y del socket */
 
   int sd;
@@ -35,7 +39,7 @@ int main() {
 
   sockname.sin_family = AF_INET;
   sockname.sin_port = htons(2000);
-  sockname.sin_addr.s_addr = inet_addr("127.0.0.1");
+  sockname.sin_addr.s_addr = inet_addr(argv[1]);
 
   /* Se solicita la conexión con el servidor */
 
