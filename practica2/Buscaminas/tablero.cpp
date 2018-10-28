@@ -44,6 +44,7 @@ int Tablero::getMarksTabB(){
 void Tablero::resetTablero(){
   setJugadorA(0);
   setJugadorB(0);
+  setTurno(1);
   srand(time(NULL));
   int rnumber = -1;
   /* Vacía el tablero */
@@ -52,7 +53,7 @@ void Tablero::resetTablero(){
       getCasilla(i, j).setBomb(false);
       getCasilla(i, j).setNBombs(0);
       getCasilla(i, j).setMark(0);
-      getCasilla(i, j).setCover(false);
+      getCasilla(i, j).setCover(true);
     }
   }
   /* Rellena el tablero con 20 bombas */

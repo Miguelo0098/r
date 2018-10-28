@@ -8,6 +8,7 @@ private:
   Casilla _tablero[10][10];
   int _jugadorA;
   int _jugadorB;
+  int _turno;
 
 
 public:
@@ -27,12 +28,20 @@ public:
     return _jugadorB;
   }
 
+  inline int getTurno(){
+      return _turno;
+  }
+
   inline void setJugadorA(int jugadorA){
     _jugadorA = jugadorA;
   }
 
   inline void setJugadorB(int jugadorB){
     _jugadorB = jugadorB;
+  }
+
+  inline void setTurno(int turno){
+      _turno = turno;
   }
 
   int getBombsTab();
