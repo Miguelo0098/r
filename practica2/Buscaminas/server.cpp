@@ -21,26 +21,6 @@
 void manejador(int signum);
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[], Tablero arrayTableros[]);
 
-/*
-    En startGame debo:
-        - Comprobar que exista otro jugador dispuesto a jugar
-        - Establecer el estado de ambos jugadores como "InGame" para
-            que no esten en matchmaking
-        - Crear el tablero
-        - Enviar un tablero sin ningun desbloqueado a ambos jugadores
-        - Comenzar a recibir ordenes
-*/
-void startGame();
-
-/*
-    En teoria, aqui se introduce el mensaje recibido del cliente
-        y se hacen efectivos los cambios en el tablero. Como respuesta
-        esta funcion envia de vuelta al cliente un tablero renovado
-        con los cambios realizados.
-*/
-void makeMove();
-
-
 int main () {
 
     /*----------------------------------------------------
