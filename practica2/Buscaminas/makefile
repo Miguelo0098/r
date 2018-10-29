@@ -1,10 +1,5 @@
 #
-OBJECTS = tablero.o casilla.o
-
-#
-CPPFLAGS = -c -g -Wall -lrt -ansi -O2 -std=c++11
-
-INCLUDES = casilla.cpp tablero.cpp
+CPPFLAGS = -c -g -lrt -ansi -O2 -std=c++11
 
 # Macros predefinidas
 #
@@ -13,30 +8,12 @@ INCLUDES = casilla.cpp tablero.cpp
 # $<: primera dependencia
 #
 
-objetivo: server
+objetivo: buscaminas
 
 # Primer objetivo
-casilla.o: casilla.cpp casilla.hpp
-			@echo "Compilando " $<
-			@g++ $(CPPFLAGS) $<
-
 #
-tablero.o: tablero.cpp tablero.hpp
-			@echo "Compilando " $<
-			@g++ $(CPPFLAGS) $<
-
-#
-cliente: cliente.cpp
-		@echo "Compilando " $<
-		@g++ $(CPPFLAGS) $<
-
-#
-server: server.cpp casilla.o tablero.o
-		@echo "Compilando " $<
-		@g++ $(CPPFLAGS) $<
-
-# Borrado
-.PHONY: clean
-clean:
-	@echo "Borrando los ficheros superfluos"
-	@rm -f $(OBJECTS) *~
+buscaminas: casilla.cpp tablero.cpp server.cpp
+		@echo "Compilando  cliente"
+		@g++ cliente.cpp -o cliente
+		@echo "Compilando  server"
+		@g++ $^ -o server
