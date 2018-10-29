@@ -482,7 +482,7 @@ int main () {
                                 if(foundUsername){
                                     //En este condicional entra cuando el usuario introducido previamente esta en el fichero.
                                     strcpy(buffer, "+Ok. Usuario correcto.");
-                                    send(new_sd,buffer,strlen(buffer),0);
+                                    send(i,buffer,strlen(buffer),0);
 
                                     //Espero la llegada de PASSWORD password
                                     bzero(buffer,sizeof(buffer));
@@ -522,7 +522,7 @@ int main () {
                                             if(successfulLogIn){
                                                 //Usuario y contrasena coinciden. Usuario conectado.
                                                 strcpy(buffer, "+0k. Usuario validado.");
-                                                send(new_sd,buffer,strlen(buffer),0);
+                                                send(i,buffer,strlen(buffer),0);
 
                                                 arrayClientes[numClientes] = new_sd;
                                                 numClientes++;
@@ -533,19 +533,19 @@ int main () {
                                             }else{
                                                 //La contrasena es incorrecta
                                                 strcpy(buffer, "-Err. Error en la validacion.");
-                                                send(new_sd,buffer,strlen(buffer),0);
+                                                send(i,buffer,strlen(buffer),0);
                                             }//End of log ins
 
                                         }else{ //End of the password obtain
                                             strcpy(buffer, "-Err. Error en la validacion.");
-                                            send(new_sd,buffer,strlen(buffer),0);
+                                            send(i,buffer,strlen(buffer),0);
                                         }//Espero contrasena pero no FIN
                                     }//recv end
 
                                 }else{//foundUsername is false
                                     //En este condicional entra cuando el usuario introducido previamente no esta en el fichero. Se repite desde cero el logIn.
                                     strcpy(buffer, "-Err. Usuario incorrecto.");
-                                    send(new_sd,buffer,strlen(buffer),0);
+                                    send(i,buffer,strlen(buffer),0);
                                 }
                             }//FIN LOGIN NORMAL
 
@@ -604,12 +604,12 @@ int main () {
                                             fileRegister << userCreds << std::endl;
 
                                             strcpy(buffer, "+0k. Usuario registrado.");
-                                            send(new_sd,buffer,strlen(buffer),0);
+                                            send(i,buffer,strlen(buffer),0);
                                         }
 
                                     }else{
                                         strcpy(buffer, "-Err. Usuario ya se encuentra registrado.");
-                                        send(new_sd,buffer,strlen(buffer),0);
+                                        send(i,buffer,strlen(buffer),0);
                                     }
                                 }
 
